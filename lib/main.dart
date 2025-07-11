@@ -47,9 +47,7 @@ class MockAdministratorRepository implements AdministratorRepository {
     }
     // Simulación de error de credenciales
     return Future.value(
-      Left(
-        AuthenticationFailure(message: 'Credenciales inválidas'),
-      ),
+      Left(AuthenticationFailure(message: 'Credenciales inválidas')),
     );
   }
 
@@ -217,10 +215,7 @@ class MockReportRepository implements ReportRepository {
         name: 'Ana Martínez',
         email: 'ana@example.com',
         phone: '5559876543',
-        specialties: [
-          ReportCategory.other,
-          ReportCategory.garbageCollection,
-        ],
+        specialties: [ReportCategory.other, ReportCategory.garbageCollection],
         isActive: true,
         currentWorkload: 5,
         averageResolutionTime: 3.2,
@@ -261,19 +256,27 @@ class MockReportRepository implements ReportRepository {
       List<Report> filteredReports = List.from(_reports);
 
       if (status != null) {
-        filteredReports = filteredReports.where((r) => r.status == status).toList();
+        filteredReports = filteredReports
+            .where((r) => r.status == status)
+            .toList();
       }
 
       if (category != null) {
-        filteredReports = filteredReports.where((r) => r.category == category).toList();
+        filteredReports = filteredReports
+            .where((r) => r.category == category)
+            .toList();
       }
 
       if (startDate != null) {
-        filteredReports = filteredReports.where((r) => r.createdAt.isAfter(startDate)).toList();
+        filteredReports = filteredReports
+            .where((r) => r.createdAt.isAfter(startDate))
+            .toList();
       }
 
       if (endDate != null) {
-        filteredReports = filteredReports.where((r) => r.createdAt.isBefore(endDate)).toList();
+        filteredReports = filteredReports
+            .where((r) => r.createdAt.isBefore(endDate))
+            .toList();
       }
 
       return Future.value(Right(filteredReports));
@@ -430,11 +433,12 @@ class MockReportRepository implements ReportRepository {
   Future<Either<Failure, Map<ReportCategory, int>>> getReportCountByCategory() {
     try {
       final Map<ReportCategory, int> countByCategory = {};
-      
+
       for (final report in _reports) {
-        countByCategory[report.category] = (countByCategory[report.category] ?? 0) + 1;
+        countByCategory[report.category] =
+            (countByCategory[report.category] ?? 0) + 1;
       }
-      
+
       return Future.value(Right(countByCategory));
     } catch (e) {
       return Future.value(Left(ServerFailure(message: e.toString())));
@@ -445,11 +449,11 @@ class MockReportRepository implements ReportRepository {
   Future<Either<Failure, Map<ReportStatus, int>>> getReportCountByStatus() {
     try {
       final Map<ReportStatus, int> countByStatus = {};
-      
+
       for (final report in _reports) {
         countByStatus[report.status] = (countByStatus[report.status] ?? 0) + 1;
       }
-      
+
       return Future.value(Right(countByStatus));
     } catch (e) {
       return Future.value(Left(ServerFailure(message: e.toString())));
@@ -459,22 +463,25 @@ class MockReportRepository implements ReportRepository {
   @override
   Future<Either<Failure, double>> getAverageResolutionTime() {
     try {
-      final resolvedReports = _reports.where((r) => 
-        r.status == ReportStatus.resolved && 
-        r.assignedAt != null && 
-        r.resolvedAt != null
-      ).toList();
-      
+      final resolvedReports = _reports
+          .where(
+            (r) =>
+                r.status == ReportStatus.resolved &&
+                r.assignedAt != null &&
+                r.resolvedAt != null,
+          )
+          .toList();
+
       if (resolvedReports.isEmpty) {
         return Future.value(const Right(0.0));
       }
-      
+
       double totalHours = 0;
       for (final report in resolvedReports) {
         final duration = report.resolvedAt!.difference(report.assignedAt!);
         totalHours += duration.inHours;
       }
-      
+
       return Future.value(Right(totalHours / resolvedReports.length));
     } catch (e) {
       return Future.value(Left(ServerFailure(message: e.toString())));
@@ -504,10 +511,7 @@ class MockTechnicianRepository implements TechnicianRepository {
       name: 'Ana Martínez',
       email: 'ana@example.com',
       phone: '5559876543',
-      specialties: [
-        ReportCategory.other,
-        ReportCategory.garbageCollection,
-      ],
+      specialties: [ReportCategory.other, ReportCategory.garbageCollection],
       isActive: true,
       currentWorkload: 5,
       averageResolutionTime: 3.2,
@@ -518,10 +522,7 @@ class MockTechnicianRepository implements TechnicianRepository {
       name: 'Roberto Sánchez',
       email: 'roberto@example.com',
       phone: '5552468135',
-      specialties: [
-        ReportCategory.roadRepair,
-        ReportCategory.waterLeaks,
-      ],
+      specialties: [ReportCategory.roadRepair, ReportCategory.waterLeaks],
       isActive: true,
       currentWorkload: 2,
       averageResolutionTime: 4.0,
@@ -536,19 +537,19 @@ class MockTechnicianRepository implements TechnicianRepository {
   }) {
     try {
       List<Technician> filteredTechnicians = List.from(_technicians);
-      
+
       if (specialty != null) {
         filteredTechnicians = filteredTechnicians
             .where((t) => t.specialties.contains(specialty))
             .toList();
       }
-      
+
       if (isActive != null) {
         filteredTechnicians = filteredTechnicians
             .where((t) => t.isActive == isActive)
             .toList();
       }
-      
+
       return Future.value(Right(filteredTechnicians));
     } catch (e) {
       return Future.value(Left(ServerFailure(message: e.toString())));
@@ -558,9 +559,7 @@ class MockTechnicianRepository implements TechnicianRepository {
   @override
   Future<Either<Failure, Technician>> getTechnicianById(String id) {
     try {
-      final technician = _technicians.firstWhere(
-        (tech) => tech.id == id,
-      );
+      final technician = _technicians.firstWhere((tech) => tech.id == id);
       return Future.value(Right(technician));
     } catch (e) {
       return Future.value(
@@ -602,7 +601,7 @@ class MockTechnicianRepository implements TechnicianRepository {
       final initialLength = _technicians.length;
       _technicians.removeWhere((tech) => tech.id == id);
       final removed = initialLength > _technicians.length;
-      
+
       if (removed) {
         return Future.value(const Right(true));
       } else {
@@ -616,13 +615,16 @@ class MockTechnicianRepository implements TechnicianRepository {
   }
 
   @override
-  Future<Either<Failure, List<Report>>> getTechnicianReports(String technicianId, {
+  Future<Either<Failure, List<Report>>> getTechnicianReports(
+    String technicianId, {
     ReportStatus? status,
   }) {
     // Simulación de reportes asignados a un técnico
     try {
       // Verificar si el técnico existe
-      final technicianIndex = _technicians.indexWhere((tech) => tech.id == technicianId);
+      final technicianIndex = _technicians.indexWhere(
+        (tech) => tech.id == technicianId,
+      );
       if (technicianIndex == -1) {
         return Future.value(
           const Left(NotFoundFailure(message: 'Técnico no encontrado')),
@@ -630,7 +632,7 @@ class MockTechnicianRepository implements TechnicianRepository {
       }
 
       final technician = _technicians[technicianIndex];
-      
+
       // Crear un ciudadano simulado para los reportes
       final mockCitizen = Citizen(
         id: 'c1',
@@ -675,7 +677,9 @@ class MockTechnicianRepository implements TechnicianRepository {
       ];
 
       if (status != null) {
-        final filteredReports = reports.where((r) => r.status == status).toList();
+        final filteredReports = reports
+            .where((r) => r.status == status)
+            .toList();
         return Future.value(Right(filteredReports));
       }
 
@@ -686,10 +690,14 @@ class MockTechnicianRepository implements TechnicianRepository {
   }
 
   @override
-  Future<Either<Failure, Map<String, double>>> getTechnicianPerformanceMetrics(String technicianId) {
+  Future<Either<Failure, Map<String, double>>> getTechnicianPerformanceMetrics(
+    String technicianId,
+  ) {
     try {
       // Verificar si el técnico existe
-      final techIndex = _technicians.indexWhere((tech) => tech.id == technicianId);
+      final techIndex = _technicians.indexWhere(
+        (tech) => tech.id == technicianId,
+      );
       if (techIndex == -1) {
         return Future.value(
           const Left(NotFoundFailure(message: 'Técnico no encontrado')),
@@ -698,12 +706,14 @@ class MockTechnicianRepository implements TechnicianRepository {
 
       // Devolver métricas simuladas
       final tech = _technicians[techIndex];
-      return Future.value(Right({
-        'averageResolutionTime': tech.averageResolutionTime,
-        'satisfactionRating': tech.satisfactionRating,
-        'completionRate': 0.85,
-        'responseTime': 1.2,
-      }));
+      return Future.value(
+        Right({
+          'averageResolutionTime': tech.averageResolutionTime,
+          'satisfactionRating': tech.satisfactionRating,
+          'completionRate': 0.85,
+          'responseTime': 1.2,
+        }),
+      );
     } catch (e) {
       return Future.value(Left(ServerFailure(message: e.toString())));
     }
@@ -731,24 +741,38 @@ void setupDependencies() {
   final getIt = GetIt.instance;
 
   // Repositorios
-  getIt.registerLazySingleton<AdministratorRepository>(() => MockAdministratorRepository());
+  getIt.registerLazySingleton<AdministratorRepository>(
+    () => MockAdministratorRepository(),
+  );
   getIt.registerLazySingleton<ReportRepository>(() => MockReportRepository());
-  getIt.registerLazySingleton<TechnicianRepository>(() => MockTechnicianRepository());
+  getIt.registerLazySingleton<TechnicianRepository>(
+    () => MockTechnicianRepository(),
+  );
   getIt.registerLazySingleton<ThemeRepository>(() => MockThemeRepository());
 
   // Casos de uso
-  getIt.registerLazySingleton(() => LoginUseCase(getIt<AdministratorRepository>()));
-  getIt.registerLazySingleton(() => GetReportsUseCase(getIt<ReportRepository>()));
-  getIt.registerLazySingleton(() => AssignReportToTechnicianUseCase(getIt<ReportRepository>()));
+  getIt.registerLazySingleton(
+    () => LoginUseCase(getIt<AdministratorRepository>()),
+  );
+  getIt.registerLazySingleton(
+    () => GetReportsUseCase(getIt<ReportRepository>()),
+  );
+  getIt.registerLazySingleton(
+    () => AssignReportToTechnicianUseCase(getIt<ReportRepository>()),
+  );
 
   // Blocs
   getIt.registerFactory(() => AuthBloc(loginUseCase: getIt<LoginUseCase>()));
-  getIt.registerFactory(() => ReportsBloc(
-        getReportsUseCase: getIt<GetReportsUseCase>(),
-        assignReportToTechnicianUseCase: getIt<AssignReportToTechnicianUseCase>(),
-      ));
+  getIt.registerFactory(
+    () => ReportsBloc(
+      getReportsUseCase: getIt<GetReportsUseCase>(),
+      assignReportToTechnicianUseCase: getIt<AssignReportToTechnicianUseCase>(),
+    ),
+  );
   getIt.registerFactory(() => TechniciansBloc(getIt<TechnicianRepository>()));
-  getIt.registerFactory(() => ThemeBloc(themeRepository: getIt<ThemeRepository>()));
+  getIt.registerFactory(
+    () => ThemeBloc(themeRepository: getIt<ThemeRepository>()),
+  );
 }
 
 void main() {
@@ -764,17 +788,14 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (_) => GetIt.instance<AuthBloc>()..add(CheckAuthStatusEvent()),
+          create: (_) =>
+              GetIt.instance<AuthBloc>()..add(CheckAuthStatusEvent()),
         ),
         BlocProvider(
           create: (_) => GetIt.instance<ThemeBloc>()..add(GetThemeEvent()),
         ),
-        BlocProvider(
-          create: (_) => GetIt.instance<ReportsBloc>(),
-        ),
-        BlocProvider(
-          create: (_) => GetIt.instance<TechniciansBloc>(),
-        ),
+        BlocProvider(create: (_) => GetIt.instance<ReportsBloc>()),
+        BlocProvider(create: (_) => GetIt.instance<TechniciansBloc>()),
       ],
       child: BlocBuilder<ThemeBloc, ThemeState>(
         builder: (context, state) {
@@ -782,39 +803,39 @@ class MyApp extends StatelessWidget {
           if (state is ThemeLoaded) {
             isDarkTheme = state.isDarkTheme;
           }
-          
+
           final theme = isDarkTheme ? AppTheme.darkTheme : AppTheme.lightTheme;
-          
+
           return MaterialApp(
             title: 'Ojo Ciudadano Admin',
             debugShowCheckedModeBanner: false,
             theme: theme.copyWith(
               // Asegurar que el colorScheme se aplique correctamente
-              colorScheme: isDarkTheme 
-                ? ColorScheme.dark(
-                    primary: AppColors.primaryDark,
-                    secondary: AppColors.actionButton,
-                    surface: const Color(0xFF1E1E1E),
-                    surfaceContainerHighest: const Color(0xFF121212),
-                    error: AppColors.error,
-                    onPrimary: Colors.black,
-                    onSecondary: Colors.black,
-                    onSurface: Colors.white,
-                    onSurfaceVariant: Colors.white,
-                    onError: Colors.white,
-                  )
-                : ColorScheme.light(
-                    primary: AppColors.primary,
-                    secondary: AppColors.actionButton,
-                    surface: Colors.white,
-                    surfaceContainerHighest: Colors.grey[50]!,
-                    error: AppColors.error,
-                    onPrimary: Colors.white,
-                    onSecondary: Colors.black,
-                    onSurface: Colors.black87,
-                    onSurfaceVariant: Colors.black87,
-                    onError: Colors.white,
-                  ),
+              colorScheme: isDarkTheme
+                  ? ColorScheme.dark(
+                      primary: AppColors.primaryDark,
+                      secondary: AppColors.actionButton,
+                      surface: const Color(0xFF1E1E1E),
+                      surfaceContainerHighest: const Color(0xFF121212),
+                      error: AppColors.error,
+                      onPrimary: Colors.black,
+                      onSecondary: Colors.black,
+                      onSurface: Colors.white,
+                      onSurfaceVariant: Colors.white,
+                      onError: Colors.white,
+                    )
+                  : ColorScheme.light(
+                      primary: AppColors.primary,
+                      secondary: AppColors.actionButton,
+                      surface: Colors.white,
+                      surfaceContainerHighest: Colors.grey[50]!,
+                      error: AppColors.error,
+                      onPrimary: Colors.white,
+                      onSecondary: Colors.black,
+                      onSurface: Colors.black87,
+                      onSurfaceVariant: Colors.black87,
+                      onError: Colors.white,
+                    ),
             ),
             home: const SplashPage(),
             routes: {
@@ -823,10 +844,7 @@ class MyApp extends StatelessWidget {
             },
             // Asegurar que el tema se aplique a los dialogs
             builder: (context, child) {
-              return Theme(
-                data: theme,
-                child: child!,
-              );
+              return Theme(data: theme, child: child!);
             },
           );
         },
@@ -834,5 +852,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-

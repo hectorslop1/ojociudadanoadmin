@@ -42,19 +42,8 @@ class _EvidenceFeedPageState extends State<EvidenceFeedPage> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        actions: [
-          IconButton(
-            icon: Icon(
-              _showFilters ? Icons.filter_list_off : Icons.filter_list,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              setState(() {
-                _showFilters = !_showFilters;
-              });
-            },
-          ),
-        ],
+        // Se eliminó el icono de filtros (tres líneas) de la esquina superior derecha
+        actions: [],
       ),
       body: Stack(
         children: [

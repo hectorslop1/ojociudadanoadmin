@@ -278,17 +278,13 @@ class _EvidenceReelItemState extends State<EvidenceReelItem> {
                             ),
                           )
                         : Container(
-                            color: Theme.of(context).brightness == Brightness.dark 
-                                ? Colors.grey[900] 
-                                : Colors.grey[200],
+                            color: Colors.black, // Fondo negro para imágenes, igual que videos
                             child: Image.network(
                               mediaUrl,
-                              fit: BoxFit.contain,  // Cambiado a contain para evitar distorsiones
+                              fit: BoxFit.contain,  // Mantiene la relación de aspecto
                               errorBuilder: (context, error, stackTrace) {
                                 return Container(
-                                  color: Theme.of(context).brightness == Brightness.dark 
-                                      ? Colors.grey[800] 
-                                      : Colors.grey[300],
+                                  color: Colors.black, // Fondo negro para errores también
                                   child: const Center(
                                     child: Icon(
                                       Icons.broken_image,
@@ -489,36 +485,7 @@ class _EvidenceReelItemState extends State<EvidenceReelItem> {
           
         // Indicadores de navegación lateral si hay múltiples evidencias
         if (_sortedEvidenceUrls.length > 1) ...[  
-          // Indicador de deslizar
-          Positioned(
-            bottom: 120,
-            right: 16,
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 102), // 0.4 * 255 = 102
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(
-                    Icons.swipe,
-                    color: Colors.white,
-                    size: 16,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    'Desliza para ver más',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
+          // No se muestra el indicador de deslizar
         ],
       ],
     );

@@ -561,36 +561,12 @@ class _EvidenceReelItemState extends State<EvidenceReelItem> {
 
   String _getCategoryName(ReportCategory category) {
     switch (category) {
-      case ReportCategory.lighting:
-        return 'Alumbrado';
       case ReportCategory.roadRepair:
-        return 'Reparación de Calles';
+        return 'Bacheo';
       case ReportCategory.garbageCollection:
         return 'Recolección de Basura';
-      case ReportCategory.waterLeaks:
-        return 'Fugas de Agua';
-      case ReportCategory.abandonedVehicles:
-        return 'Vehículos Abandonados';
-      case ReportCategory.noise:
-        return 'Ruido';
-      case ReportCategory.animalAbuse:
-        return 'Maltrato Animal';
-      case ReportCategory.insecurity:
-        return 'Inseguridad';
-      case ReportCategory.stopSignsDamaged:
-        return 'Señales de Alto Dañadas';
-      case ReportCategory.trafficLightsDamaged:
-        return 'Semáforos Dañados';
-      case ReportCategory.poorSignage:
-        return 'Señalización Deficiente';
-      case ReportCategory.genderEquity:
-        return 'Equidad de Género';
-      case ReportCategory.disabilityRamps:
-        return 'Rampas para Discapacitados';
-      case ReportCategory.serviceComplaints:
-        return 'Quejas de Servicio';
-      case ReportCategory.other:
-        return 'Otros';
+      case ReportCategory.streetImprovement:
+        return 'Mejoramiento de Calles';
     }
   }
 

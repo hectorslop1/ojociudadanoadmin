@@ -29,50 +29,14 @@ class EvidenceCard extends StatelessWidget {
     // Obtener el nombre de la categoría
     String categoryName = '';
     switch (report.category) {
-      case ReportCategory.lighting:
-        categoryName = 'Alumbrado';
-        break;
       case ReportCategory.roadRepair:
-        categoryName = 'Reparación de Calles';
+        categoryName = 'Bacheo';
         break;
       case ReportCategory.garbageCollection:
         categoryName = 'Recolección de Basura';
         break;
-      case ReportCategory.waterLeaks:
-        categoryName = 'Fugas de Agua';
-        break;
-      case ReportCategory.abandonedVehicles:
-        categoryName = 'Vehículos Abandonados';
-        break;
-      case ReportCategory.noise:
-        categoryName = 'Ruido';
-        break;
-      case ReportCategory.animalAbuse:
-        categoryName = 'Maltrato Animal';
-        break;
-      case ReportCategory.insecurity:
-        categoryName = 'Inseguridad';
-        break;
-      case ReportCategory.stopSignsDamaged:
-        categoryName = 'Señales de Alto Dañadas';
-        break;
-      case ReportCategory.trafficLightsDamaged:
-        categoryName = 'Semáforos Dañados';
-        break;
-      case ReportCategory.poorSignage:
-        categoryName = 'Señalización Deficiente';
-        break;
-      case ReportCategory.genderEquity:
-        categoryName = 'Equidad de Género';
-        break;
-      case ReportCategory.disabilityRamps:
-        categoryName = 'Rampas para Discapacitados';
-        break;
-      case ReportCategory.serviceComplaints:
-        categoryName = 'Quejas de Servicio';
-        break;
-      case ReportCategory.other:
-        categoryName = 'Otros';
+      case ReportCategory.streetImprovement:
+        categoryName = 'Mejoramiento de Calles';
         break;
     }
     

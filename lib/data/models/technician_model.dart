@@ -1,4 +1,3 @@
-import 'package:ojo_ciudadano_admin/domain/entities/report.dart';
 import 'package:ojo_ciudadano_admin/domain/entities/technician.dart';
 
 class TechnicianModel extends Technician {
@@ -12,7 +11,11 @@ class TechnicianModel extends Technician {
     required super.isActive,
     required super.currentWorkload,
     required super.averageResolutionTime,
-    required super.satisfactionRating,
+    required super.rating,
+    super.assignedReports,
+    super.lastKnownLatitude,
+    super.lastKnownLongitude,
+    super.isAvailable = true,
   });
 
   factory TechnicianModel.fromJson(Map<String, dynamic> json) {
@@ -26,7 +29,10 @@ class TechnicianModel extends Technician {
       isActive: json['is_active'],
       currentWorkload: json['current_workload'],
       averageResolutionTime: json['average_resolution_time'].toDouble(),
-      satisfactionRating: json['satisfaction_rating'].toDouble(),
+      rating: json['rating']?.toDouble() ?? 0.0,
+      lastKnownLatitude: json['last_known_latitude']?.toDouble(),
+      lastKnownLongitude: json['last_known_longitude']?.toDouble(),
+      isAvailable: json['is_available'] ?? true,
     );
   }
 
@@ -37,85 +43,20 @@ class TechnicianModel extends Technician {
       'email': email,
       'phone': phone,
       'profile_image_url': profileImageUrl,
-      'specialties': _specialtiesToJson(specialties),
+      'specialties': specialties,
       'is_active': isActive,
       'current_workload': currentWorkload,
       'average_resolution_time': averageResolutionTime,
-      'satisfaction_rating': satisfactionRating,
+      'rating': rating,
+      'last_known_latitude': lastKnownLatitude,
+      'last_known_longitude': lastKnownLongitude,
+      'is_available': isAvailable,
     };
   }
 
-  static List<ReportCategory> _specialtiesFromJson(List<dynamic> specialties) {
-    return specialties.map((specialty) {
-      switch (specialty) {
-        case 'lighting':
-          return ReportCategory.lighting;
-        case 'road_repair':
-          return ReportCategory.roadRepair;
-        case 'garbage_collection':
-          return ReportCategory.garbageCollection;
-        case 'water_leaks':
-          return ReportCategory.waterLeaks;
-        case 'abandoned_vehicles':
-          return ReportCategory.abandonedVehicles;
-        case 'noise':
-          return ReportCategory.noise;
-        case 'animal_abuse':
-          return ReportCategory.animalAbuse;
-        case 'insecurity':
-          return ReportCategory.insecurity;
-        case 'stop_signs_damaged':
-          return ReportCategory.stopSignsDamaged;
-        case 'traffic_lights_damaged':
-          return ReportCategory.trafficLightsDamaged;
-        case 'poor_signage':
-          return ReportCategory.poorSignage;
-        case 'gender_equity':
-          return ReportCategory.genderEquity;
-        case 'disability_ramps':
-          return ReportCategory.disabilityRamps;
-        case 'service_complaints':
-          return ReportCategory.serviceComplaints;
-        default:
-          return ReportCategory.other;
-      }
-    }).toList();
+  static List<String> _specialtiesFromJson(List<dynamic> specialties) {
+    return specialties.map((specialty) => specialty.toString()).toList();
   }
 
-  static List<String> _specialtiesToJson(List<ReportCategory> specialties) {
-    return specialties.map((specialty) {
-      switch (specialty) {
-        case ReportCategory.lighting:
-          return 'lighting';
-        case ReportCategory.roadRepair:
-          return 'road_repair';
-        case ReportCategory.garbageCollection:
-          return 'garbage_collection';
-        case ReportCategory.waterLeaks:
-          return 'water_leaks';
-        case ReportCategory.abandonedVehicles:
-          return 'abandoned_vehicles';
-        case ReportCategory.noise:
-          return 'noise';
-        case ReportCategory.animalAbuse:
-          return 'animal_abuse';
-        case ReportCategory.insecurity:
-          return 'insecurity';
-        case ReportCategory.stopSignsDamaged:
-          return 'stop_signs_damaged';
-        case ReportCategory.trafficLightsDamaged:
-          return 'traffic_lights_damaged';
-        case ReportCategory.poorSignage:
-          return 'poor_signage';
-        case ReportCategory.genderEquity:
-          return 'gender_equity';
-        case ReportCategory.disabilityRamps:
-          return 'disability_ramps';
-        case ReportCategory.serviceComplaints:
-          return 'service_complaints';
-        case ReportCategory.other:
-          return 'other';
-      }
-    }).toList();
-  }
+  // Ya no necesitamos este método porque ahora specialties es List<String>
 }

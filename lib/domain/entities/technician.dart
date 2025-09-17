@@ -7,11 +7,15 @@ class Technician extends Equatable {
   final String email;
   final String phone;
   final String? profileImageUrl;
-  final List<ReportCategory> specialties;
+  final List<String> specialties; // Cambiado a String para mayor flexibilidad
   final bool isActive;
   final int currentWorkload;
   final double averageResolutionTime; // en horas
-  final double satisfactionRating; // 0-5
+  final double rating; // 0-5, satisfacción del cliente
+  final List<Report>? assignedReports; // Reportes asignados actualmente
+  final double? lastKnownLatitude; // Última ubicación conocida
+  final double? lastKnownLongitude;
+  final bool isAvailable; // Disponible para asignaciones
 
   const Technician({
     required this.id,
@@ -23,7 +27,11 @@ class Technician extends Equatable {
     required this.isActive,
     required this.currentWorkload,
     required this.averageResolutionTime,
-    required this.satisfactionRating,
+    required this.rating,
+    this.assignedReports,
+    this.lastKnownLatitude,
+    this.lastKnownLongitude,
+    this.isAvailable = true,
   });
 
   @override
@@ -37,7 +45,11 @@ class Technician extends Equatable {
     isActive,
     currentWorkload,
     averageResolutionTime,
-    satisfactionRating,
+    rating,
+    assignedReports,
+    lastKnownLatitude,
+    lastKnownLongitude,
+    isAvailable,
   ];
 
   Technician copyWith({
@@ -46,11 +58,15 @@ class Technician extends Equatable {
     String? email,
     String? phone,
     String? profileImageUrl,
-    List<ReportCategory>? specialties,
+    List<String>? specialties,
     bool? isActive,
     int? currentWorkload,
     double? averageResolutionTime,
-    double? satisfactionRating,
+    double? rating,
+    List<Report>? assignedReports,
+    double? lastKnownLatitude,
+    double? lastKnownLongitude,
+    bool? isAvailable,
   }) {
     return Technician(
       id: id ?? this.id,
@@ -62,7 +78,11 @@ class Technician extends Equatable {
       isActive: isActive ?? this.isActive,
       currentWorkload: currentWorkload ?? this.currentWorkload,
       averageResolutionTime: averageResolutionTime ?? this.averageResolutionTime,
-      satisfactionRating: satisfactionRating ?? this.satisfactionRating,
+      rating: rating ?? this.rating,
+      assignedReports: assignedReports ?? this.assignedReports,
+      lastKnownLatitude: lastKnownLatitude ?? this.lastKnownLatitude,
+      lastKnownLongitude: lastKnownLongitude ?? this.lastKnownLongitude,
+      isAvailable: isAvailable ?? this.isAvailable,
     );
   }
 }

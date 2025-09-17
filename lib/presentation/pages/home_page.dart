@@ -3,8 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ojo_ciudadano_admin/core/theme/app_colors.dart';
 import 'package:ojo_ciudadano_admin/presentation/bloc/auth/auth_bloc.dart';
 import 'package:ojo_ciudadano_admin/presentation/bloc/auth/auth_state.dart';
+import 'package:ojo_ciudadano_admin/presentation/pages/batch_management_page.dart';
 import 'package:ojo_ciudadano_admin/presentation/pages/dashboard_page.dart';
-import 'package:ojo_ciudadano_admin/presentation/pages/evidence_feed_page.dart';
+// import 'package:ojo_ciudadano_admin/presentation/pages/evidence_feed_page.dart'; // Temporalmente comentado
 import 'package:ojo_ciudadano_admin/presentation/pages/login_page.dart';
 import 'package:ojo_ciudadano_admin/presentation/pages/profile_page.dart';
 import 'package:ojo_ciudadano_admin/presentation/pages/reports_page.dart';
@@ -21,15 +22,17 @@ class _HomePageState extends State<HomePage> {
 
   final List<Widget> _pages = [
     const DashboardPage(),
-    const EvidenceFeedPage(),
+    // const EvidenceFeedPage(), // Temporalmente removido del menú
     const ReportsPage(),
+    const BatchManagementPage(),
     const ProfilePage(),
   ];
 
   final List<String> _titles = [
     'Dashboard',
-    'Evidencias',
+    // 'Evidencias', // Temporalmente removido del menú
     'Reportes',
+    'Gestión por Lotes',
     'Perfil',
   ];
 
@@ -46,31 +49,31 @@ class _HomePageState extends State<HomePage> {
         }
       },
       child: Scaffold(
-        appBar: AppBar(
-          title: Text(_titles[_currentIndex]),
-          backgroundColor: _currentIndex == 2 
-              ? Theme.of(context).brightness == Brightness.light 
-                  ? AppColors.primary 
-                  : AppColors.primaryDark 
-              : null, // Color guinda adaptado al modo
-          foregroundColor: _currentIndex == 2 ? Colors.white : null, // Texto blanco para la página de Reportes
-          elevation: 2,
-          actions: [
-            if (_currentIndex != 4) // No mostrar en la página de perfil
-              IconButton(
-                icon: const Icon(Icons.notifications_outlined),
-                onPressed: () {
-                  // Implementar visualización de notificaciones
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Notificaciones no implementadas aún'),
+        appBar: _currentIndex == 1 || _currentIndex == 2
+            ? null // No mostrar AppBar para Reportes y Gestión por Lotes
+            : AppBar(
+                title: Text(_titles[_currentIndex]),
+                backgroundColor: null,
+                foregroundColor: null,
+                elevation: 2,
+                actions: [
+                  if (_currentIndex != 4) // No mostrar en la página de perfil
+                    IconButton(
+                      icon: const Icon(Icons.notifications_outlined),
+                      onPressed: () {
+                        // Implementar visualización de notificaciones
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'Notificaciones no implementadas aún',
+                            ),
+                          ),
+                        );
+                      },
+                      tooltip: 'Notificaciones',
                     ),
-                  );
-                },
-                tooltip: 'Notificaciones',
+                ],
               ),
-          ],
-        ),
         body: _pages[_currentIndex],
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _currentIndex,
@@ -90,18 +93,16 @@ class _HomePageState extends State<HomePage> {
               icon: Icon(Icons.dashboard),
               label: 'Dashboard',
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.photo_library),
-              label: 'Evidencias',
-            ),
+            // Evidencias temporalmente removido del menú
             BottomNavigationBarItem(
               icon: Icon(Icons.assignment),
               label: 'Reportes',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: 'Perfil',
+              icon: Icon(Icons.batch_prediction),
+              label: 'Lotes',
             ),
+            BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Perfil'),
           ],
         ),
       ),

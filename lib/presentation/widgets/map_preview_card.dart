@@ -23,163 +23,179 @@ class MapPreviewCard extends StatelessWidget {
     
     // Crear marcadores para el mapa
     final List<Marker> markers = _createMarkersFromReports(reports);
+    
+    // Obtener el tema actual
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final primaryColor = isDarkMode ? AppColors.primaryDark : AppColors.primary;
 
-    return Card(
+    return Container(
       clipBehavior: Clip.antiAlias,
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey.withOpacity(0.2), width: 1),
       ),
-      child: InkWell(
-        onTap: () {
-          // Navegar a la página completa del mapa
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => const InteractiveMapPage(),
-            ),
-          ).then((_) {
-            // Recargar los datos al regresar al dashboard
-            onReturn();
-          });
-        },
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Título de la tarjeta
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Reportes en el Mapa',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Título de la tarjeta con mejor diseño
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: primaryColor.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  Icon(
-                    Icons.fullscreen,
-                    color: Theme.of(context).primaryColor,
+                  child: Icon(
+                    Icons.map,
+                    color: primaryColor,
                     size: 20,
                   ),
-                ],
-              ),
+                ),
+                const SizedBox(width: 12),
+                const Text(
+                  'Reportes en el Mapa',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const Spacer(),
+                IconButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const InteractiveMapPage(),
+                      ),
+                    ).then((_) {
+                      onReturn();
+                    });
+                  },
+                  icon: Icon(
+                    Icons.fullscreen,
+                    color: primaryColor,
+                    size: 22,
+                  ),
+                  tooltip: 'Ver mapa completo',
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                ),
+              ],
             ),
+          ),
             
-            // Vista previa del mapa
-            Container(
-              height: 180,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                color: Theme.of(context).brightness == Brightness.dark 
-                    ? Colors.grey[800] 
-                    : Colors.grey[200],
-              ),
-              clipBehavior: Clip.antiAlias,
-              child: Stack(
-                children: [
-                  // Mapa
-                  FlutterMap(
-                    options: MapOptions(
-                      initialCenter: initialPosition,
-                      initialZoom: 13.0,
-                      interactionOptions: const InteractionOptions(
-                        // Desactivar interacciones para la vista previa
-                        flags: InteractiveFlag.none,
-                      ),
-                    ),
-                    children: [
-                      TileLayer(
-                        urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                        userAgentPackageName: 'com.ojo_ciudadano_admin',
-                        subdomains: const ['a', 'b', 'c'],
-                      ),
-                      MarkerLayer(markers: markers),
-                    ],
-                  ),
-                    
-                  // Overlay con gradiente para mejor legibilidad
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    child: Container(
-                      height: 40,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Colors.transparent,
-                            Colors.black.withValues(alpha: 77), // 0.3 * 255 = 76.5 ≈ 77
-                          ],
-                        ),
-                      ),
+          // Vista previa del mapa con diseño mejorado
+          Container(
+            height: 200,
+            width: double.infinity,
+            clipBehavior: Clip.antiAlias,
+            decoration: BoxDecoration(
+              color: Theme.of(context).brightness == Brightness.dark 
+                  ? Colors.grey[800] 
+                  : Colors.grey[200],
+            ),
+            child: Stack(
+              children: [
+                // Mapa
+                FlutterMap(
+                  options: MapOptions(
+                    initialCenter: initialPosition,
+                    initialZoom: 13.0,
+                    interactionOptions: const InteractionOptions(
+                      // Desactivar interacciones para la vista previa
+                      flags: InteractiveFlag.none,
                     ),
                   ),
+                  children: [
+                    TileLayer(
+                      urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                      userAgentPackageName: 'com.ojo_ciudadano_admin',
+                      subdomains: const ['a', 'b', 'c'],
+                    ),
+                    MarkerLayer(markers: markers),
+                  ],
+                ),
                   
-                  // Botón para ver mapa completo
-                  Positioned(
-                    bottom: 8,
-                    right: 8,
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => const InteractiveMapPage(),
-                          ),
-                        ).then((_) {
-                          // Recargar los datos al regresar al dashboard
-                          onReturn();
-                        });
-                      },
-                      icon: const Icon(Icons.map, size: 16),
-                      label: const Text('Ver mapa completo'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).brightness == Brightness.light
-                            ? AppColors.primary
-                            : AppColors.primaryDark,
-                        foregroundColor: Colors.white,
-                        textStyle: const TextStyle(fontSize: 12),
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                // Overlay con gradiente para mejor legibilidad
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: Container(
+                    height: 60,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.transparent,
+                          Colors.black.withOpacity(0.4),
+                        ],
                       ),
                     ),
                   ),
-                ],
-              ),
+                ),
+                
+                // Botón para ver mapa completo
+                Positioned(
+                  bottom: 12,
+                  right: 12,
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const InteractiveMapPage(),
+                        ),
+                      ).then((_) {
+                        // Recargar los datos al regresar al dashboard
+                        onReturn();
+                      });
+                    },
+                    icon: const Icon(Icons.map, size: 16),
+                    label: const Text('Ver mapa completo'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: primaryColor,
+                      foregroundColor: Colors.white,
+                      elevation: 4,
+                      shadowColor: Colors.black.withOpacity(0.3),
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    ),
+                  ),
+                ),
+              ],
             ),
-            
-            // Estadísticas rápidas
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _buildStatItem(
-                    context, 
-                    Icons.location_on, 
-                    '${reports.length}',
-                    'Reportes',
-                  ),
-                  _buildStatItem(
-                    context, 
-                    Icons.category, 
-                    '${_getUniqueCategories(reports).length}',
-                    'Categorías',
-                  ),
-                  _buildStatItem(
-                    context, 
-                    Icons.pending_actions, 
-                    '${reports.where((r) => r.status == ReportStatus.pending).length}',
-                    'Pendientes',
-                  ),
-                ],
-              ),
+          ),
+          
+          // Estadísticas rápidas con diseño mejorado
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildStatItem(
+                  context, 
+                  Icons.location_on, 
+                  '${reports.length}',
+                  'Reportes',
+                ),
+                _buildStatItem(
+                  context, 
+                  Icons.category, 
+                  '${_getUniqueCategories(reports).length}',
+                  'Categorías',
+                ),
+                _buildStatItem(
+                  context, 
+                  Icons.pending_actions, 
+                  '${reports.where((r) => r.status == ReportStatus.pending).length}',
+                  'Pendientes',
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -225,41 +241,40 @@ class MapPreviewCard extends StatelessWidget {
     return reports.map((report) => report.category).toSet();
   }
   
-  // Construir elemento de estadística
+  // Construir elemento de estadística con diseño mejorado
   Widget _buildStatItem(BuildContext context, IconData icon, String value, String label) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final primaryColor = isDarkMode ? AppColors.primaryDark : AppColors.primary;
+    
     return Column(
       children: [
         Container(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: Theme.of(context).brightness == Brightness.light
-                ? AppColors.primary.withAlpha(30)
-                : AppColors.primaryDark.withAlpha(30),
-            shape: BoxShape.circle,
+            color: primaryColor.withOpacity(0.15),
+            borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(
             icon,
-            color: Theme.of(context).brightness == Brightness.light
-                ? AppColors.primary
-                : AppColors.primaryDark,
-            size: 20,
+            color: primaryColor,
+            size: 22,
           ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 8),
         Text(
           value,
           style: TextStyle(
-            fontSize: 18,
+            fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: Theme.of(context).brightness == Brightness.light
-                ? AppColors.primary
-                : AppColors.primaryDark,
+            color: primaryColor,
           ),
         ),
+        const SizedBox(height: 2),
         Text(
           label,
           style: TextStyle(
-            fontSize: 12,
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
             color: Theme.of(context).textTheme.bodyMedium?.color,
           ),
         ),

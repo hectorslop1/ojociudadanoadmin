@@ -18,6 +18,8 @@ class ReportsLoaded extends ReportsState {
   final ReportCategory? filterCategory;
   final DateTime? filterStartDate;
   final DateTime? filterEndDate;
+  final String? filterDelegationId;
+  final int? filterMinPriority;
   
   const ReportsLoaded({
     required this.reports,
@@ -25,6 +27,8 @@ class ReportsLoaded extends ReportsState {
     this.filterCategory,
     this.filterStartDate,
     this.filterEndDate,
+    this.filterDelegationId,
+    this.filterMinPriority,
   });
   
   @override
@@ -34,6 +38,8 @@ class ReportsLoaded extends ReportsState {
     filterCategory,
     filterStartDate,
     filterEndDate,
+    filterDelegationId,
+    filterMinPriority,
   ];
 }
 
@@ -44,6 +50,8 @@ class ReportDetailsLoaded extends ReportsState {
   final ReportCategory? filterCategory;
   final DateTime? filterStartDate;
   final DateTime? filterEndDate;
+  final String? filterDelegationId;
+  final int? filterMinPriority;
   
   const ReportDetailsLoaded({
     required this.report,
@@ -52,6 +60,8 @@ class ReportDetailsLoaded extends ReportsState {
     this.filterCategory,
     this.filterStartDate,
     this.filterEndDate,
+    this.filterDelegationId,
+    this.filterMinPriority,
   });
   
   @override
@@ -62,6 +72,8 @@ class ReportDetailsLoaded extends ReportsState {
     filterCategory,
     filterStartDate,
     filterEndDate,
+    filterDelegationId,
+    filterMinPriority,
   ];
 }
 
@@ -92,6 +104,24 @@ class ResolutionNotesAdded extends ReportsState {
   List<Object> get props => [report];
 }
 
+class ReportPriorityUpdated extends ReportsState {
+  final Report report;
+  
+  const ReportPriorityUpdated({required this.report});
+  
+  @override
+  List<Object> get props => [report];
+}
+
+class AllReportPrioritiesUpdated extends ReportsState {
+  final List<Report> reports;
+  
+  const AllReportPrioritiesUpdated({required this.reports});
+  
+  @override
+  List<Object> get props => [reports];
+}
+
 class ReportsError extends ReportsState {
   final String message;
   
@@ -106,19 +136,28 @@ class ReportStatisticsLoaded extends ReportsState {
   final Map<ReportStatus, int> reportsByStatus;
   final double averageResolutionTime;
   final List<Report> allReports;
+  final List<Report>? filteredReports;
+  final String? delegationId;
+  final Map<String, double>? performanceMetrics;
   
   const ReportStatisticsLoaded({
     required this.reportsByCategory,
     required this.reportsByStatus,
     required this.averageResolutionTime,
     required this.allReports,
+    this.filteredReports,
+    this.delegationId,
+    this.performanceMetrics,
   });
   
   @override
-  List<Object> get props => [
+  List<Object?> get props => [
     reportsByCategory,
     reportsByStatus,
     averageResolutionTime,
     allReports,
+    filteredReports,
+    delegationId,
+    performanceMetrics,
   ];
 }

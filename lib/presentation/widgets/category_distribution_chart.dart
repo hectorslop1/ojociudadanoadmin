@@ -4,10 +4,12 @@ import 'package:ojo_ciudadano_admin/domain/entities/report.dart';
 
 class CategoryDistributionChart extends StatelessWidget {
   final Map<ReportCategory, int> reportsByCategory;
+  final Function(ReportCategory)? onCategoryTap;
 
   const CategoryDistributionChart({
     super.key,
     required this.reportsByCategory,
+    this.onCategoryTap,
   });
 
   @override
@@ -23,26 +25,28 @@ class CategoryDistributionChart extends StatelessWidget {
     
     // Ahora usamos CategoryUtils para los colores
     
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Barras horizontales para cada categoría
-            Expanded(
-              child: ListView.builder(
-                physics: const BouncingScrollPhysics(),
-                itemCount: sortedCategories.length,
-                itemBuilder: (context, index) {
-                  final entry = sortedCategories[index];
-                  final category = entry.key;
-                  final count = entry.value;
-                  final percentage = total > 0 ? count / total * 100 : 0;
-                  final color = CategoryUtils.getColorForCategory(category, context: context);
-                  
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Barras horizontales para cada categoría
+          Expanded(
+            child: ListView.builder(
+              physics: const BouncingScrollPhysics(),
+              itemCount: sortedCategories.length,
+              itemBuilder: (context, index) {
+                final entry = sortedCategories[index];
+                final category = entry.key;
+                final count = entry.value;
+                final percentage = total > 0 ? count / total * 100 : 0;
+                final color = CategoryUtils.getColorForCategory(category, context: context);
+                
+                return InkWell(
+                  onTap: onCategoryTap != null ? () => onCategoryTap!(category) : null,
+                  borderRadius: BorderRadius.circular(8),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -91,12 +95,12 @@ class CategoryDistributionChart extends StatelessWidget {
                         ),
                       ],
                     ),
-                  );
-                },
-              ),
+                  ),
+                );
+              },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

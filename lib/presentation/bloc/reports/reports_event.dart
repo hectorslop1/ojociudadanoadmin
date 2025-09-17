@@ -13,16 +13,20 @@ class LoadReportsEvent extends ReportsEvent {
   final ReportCategory? category;
   final DateTime? startDate;
   final DateTime? endDate;
+  final String? delegationId;
+  final int? minPriority;
 
   const LoadReportsEvent({
     this.status,
     this.category,
     this.startDate,
     this.endDate,
+    this.delegationId,
+    this.minPriority,
   });
 
   @override
-  List<Object?> get props => [status, category, startDate, endDate];
+  List<Object?> get props => [status, category, startDate, endDate, delegationId, minPriority];
 }
 
 class LoadReportDetailsEvent extends ReportsEvent {
@@ -73,4 +77,35 @@ class AddResolutionNotesEvent extends ReportsEvent {
   List<Object> get props => [reportId, notes];
 }
 
-class LoadReportStatisticsEvent extends ReportsEvent {}
+class LoadReportStatisticsEvent extends ReportsEvent {
+  final String? delegationId;
+  
+  const LoadReportStatisticsEvent({this.delegationId});
+  
+  @override
+  List<Object?> get props => [delegationId];
+}
+
+class UpdateReportPriorityEvent extends ReportsEvent {
+  final String reportId;
+  final int? priority; // Si es null, se calculará automáticamente
+
+  const UpdateReportPriorityEvent({
+    required this.reportId,
+    this.priority,
+  });
+
+  @override
+  List<Object?> get props => [reportId, priority];
+}
+
+class UpdateAllReportPrioritiesEvent extends ReportsEvent {}
+
+class FilterReportsByPriorityEvent extends ReportsEvent {
+  final int minPriority;
+
+  const FilterReportsByPriorityEvent({required this.minPriority});
+
+  @override
+  List<Object> get props => [minPriority];
+}

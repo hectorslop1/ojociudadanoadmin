@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:ojo_ciudadano_admin/domain/entities/citizen.dart';
+import 'package:ojo_ciudadano_admin/domain/entities/delegation.dart';
 import 'package:ojo_ciudadano_admin/domain/entities/technician.dart';
 
 enum ReportStatus {
@@ -11,21 +12,9 @@ enum ReportStatus {
 }
 
 enum ReportCategory {
-  lighting,         // Alumbrado
-  roadRepair,       // Bacheo
-  garbageCollection,// Recolección de basura
-  waterLeaks,       // Tiraderos de agua
-  abandonedVehicles,// Vehículos abandonados o sucios
-  noise,            // Exceso de ruido
-  animalAbuse,      // Maltrato animal
-  insecurity,       // Inseguridad
-  stopSignsDamaged, // Señales de alto en mal estado
-  trafficLightsDamaged, // Semáforos en mal estado
-  poorSignage,      // Señalización deficiente
-  genderEquity,     // Temas de equidad de género
-  disabilityRamps,  // Atención a rampas para discapacitados
-  serviceComplaints,// Inconformidades en trámites y servicios
-  other             // Casos adicionales no previstos
+  garbageCollection, // Recolección de basura
+  streetImprovement, // Mejoramiento de calles
+  roadRepair        // Bacheo
 }
 
 class Report extends Equatable {
@@ -44,6 +33,8 @@ class Report extends Equatable {
   final DateTime? assignedAt;
   final DateTime? resolvedAt;
   final String? resolutionNotes;
+  final Delegation? delegation;
+  final int? priority; // 1-5, donde 5 es la prioridad más alta
 
   const Report({
     required this.id,
@@ -61,6 +52,8 @@ class Report extends Equatable {
     this.assignedAt,
     this.resolvedAt,
     this.resolutionNotes,
+    this.delegation,
+    this.priority,
   });
 
   @override
@@ -80,6 +73,8 @@ class Report extends Equatable {
     assignedAt,
     resolvedAt,
     resolutionNotes,
+    delegation,
+    priority,
   ];
 
   Report copyWith({
@@ -98,6 +93,8 @@ class Report extends Equatable {
     DateTime? assignedAt,
     DateTime? resolvedAt,
     String? resolutionNotes,
+    Delegation? delegation,
+    int? priority,
   }) {
     return Report(
       id: id ?? this.id,
@@ -115,6 +112,8 @@ class Report extends Equatable {
       assignedAt: assignedAt ?? this.assignedAt,
       resolvedAt: resolvedAt ?? this.resolvedAt,
       resolutionNotes: resolutionNotes ?? this.resolutionNotes,
+      delegation: delegation ?? this.delegation,
+      priority: priority ?? this.priority,
     );
   }
 }

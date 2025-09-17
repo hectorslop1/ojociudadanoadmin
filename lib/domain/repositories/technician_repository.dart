@@ -6,7 +6,7 @@ import 'package:ojo_ciudadano_admin/domain/entities/report.dart';
 abstract class TechnicianRepository {
   Future<Either<Failure, List<Technician>>> getTechnicians({
     bool? isActive,
-    ReportCategory? specialty,
+    String? specialty,
   });
   
   Future<Either<Failure, Technician>> getTechnicianById(String id);

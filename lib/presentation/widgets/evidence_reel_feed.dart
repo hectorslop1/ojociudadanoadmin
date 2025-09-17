@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:ojo_ciudadano_admin/domain/entities/report.dart';
 import 'package:ojo_ciudadano_admin/presentation/widgets/evidence_reel_item.dart';
 import 'package:ojo_ciudadano_admin/core/theme/app_colors.dart';
-import 'dart:ui';
 
 class EvidenceReelFeed extends StatefulWidget {
   final List<Report> reports;
@@ -130,36 +129,12 @@ class _EvidenceReelFeedState extends State<EvidenceReelFeed> with SingleTickerPr
   // Obtener nombre legible de la categoría
   String _getCategoryName(ReportCategory category) {
     switch (category) {
-      case ReportCategory.lighting:
-        return 'Alumbrado';
       case ReportCategory.roadRepair:
         return 'Bacheo';
       case ReportCategory.garbageCollection:
         return 'Recolección de Basura';
-      case ReportCategory.waterLeaks:
-        return 'Tiraderos de agua';
-      case ReportCategory.abandonedVehicles:
-        return 'Vehículos abandonados';
-      case ReportCategory.noise:
-        return 'Exceso de ruido';
-      case ReportCategory.animalAbuse:
-        return 'Maltrato animal';
-      case ReportCategory.insecurity:
-        return 'Inseguridad';
-      case ReportCategory.stopSignsDamaged:
-        return 'Señales de alto dañadas';
-      case ReportCategory.trafficLightsDamaged:
-        return 'Semáforos dañados';
-      case ReportCategory.poorSignage:
-        return 'Señalización deficiente';
-      case ReportCategory.genderEquity:
-        return 'Equidad de género';
-      case ReportCategory.disabilityRamps:
-        return 'Rampas para discapacitados';
-      case ReportCategory.serviceComplaints:
-        return 'Quejas de servicio';
-      case ReportCategory.other:
-        return 'Otros';
+      case ReportCategory.streetImprovement:
+        return 'Mejoramiento de Calles';
     }
   }
   
@@ -198,72 +173,24 @@ class _EvidenceReelFeedState extends State<EvidenceReelFeed> with SingleTickerPr
   // Obtener icono para la categoría
   IconData _getCategoryIcon(ReportCategory category) {
     switch (category) {
-      case ReportCategory.lighting:
-        return Icons.lightbulb_outline;
       case ReportCategory.roadRepair:
         return Icons.construction;
       case ReportCategory.garbageCollection:
         return Icons.delete_outline;
-      case ReportCategory.waterLeaks:
-        return Icons.water_drop_outlined;
-      case ReportCategory.abandonedVehicles:
-        return Icons.directions_car_outlined;
-      case ReportCategory.noise:
-        return Icons.volume_up_outlined;
-      case ReportCategory.animalAbuse:
-        return Icons.pets_outlined;
-      case ReportCategory.insecurity:
-        return Icons.security_outlined;
-      case ReportCategory.stopSignsDamaged:
-        return Icons.do_not_disturb_on_outlined;
-      case ReportCategory.trafficLightsDamaged:
-        return Icons.traffic_outlined;
-      case ReportCategory.poorSignage:
-        return Icons.signpost_outlined;
-      case ReportCategory.genderEquity:
-        return Icons.people_outline;
-      case ReportCategory.disabilityRamps:
-        return Icons.accessible_outlined;
-      case ReportCategory.serviceComplaints:
-        return Icons.support_agent_outlined;
-      case ReportCategory.other:
-        return Icons.more_horiz_outlined;
+      case ReportCategory.streetImprovement:
+        return Icons.home_repair_service;
     }
   }
   
   // Obtener color para la categoría
   Color _getCategoryColor(ReportCategory category) {
     switch (category) {
-      case ReportCategory.lighting:
-        return Colors.amber.shade700;
       case ReportCategory.roadRepair:
         return Colors.brown.shade600;
       case ReportCategory.garbageCollection:
         return Colors.green.shade800;
-      case ReportCategory.waterLeaks:
+      case ReportCategory.streetImprovement:
         return Colors.blue.shade700;
-      case ReportCategory.abandonedVehicles:
-        return Colors.blueGrey.shade700;
-      case ReportCategory.noise:
-        return Colors.purple.shade700;
-      case ReportCategory.animalAbuse:
-        return Colors.orange.shade800;
-      case ReportCategory.insecurity:
-        return Colors.red.shade700;
-      case ReportCategory.stopSignsDamaged:
-        return Colors.red.shade900;
-      case ReportCategory.trafficLightsDamaged:
-        return Colors.amber.shade900;
-      case ReportCategory.poorSignage:
-        return Colors.indigo.shade700;
-      case ReportCategory.genderEquity:
-        return Colors.pink.shade700;
-      case ReportCategory.disabilityRamps:
-        return Colors.teal.shade700;
-      case ReportCategory.serviceComplaints:
-        return Colors.deepOrange.shade700;
-      case ReportCategory.other:
-        return Colors.grey.shade700;
     }
   }
 
@@ -313,7 +240,7 @@ class _EvidenceReelFeedState extends State<EvidenceReelFeed> with SingleTickerPr
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.5),
+                color: const Color.fromRGBO(0, 0, 0, 0.5),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Text(
@@ -335,7 +262,7 @@ class _EvidenceReelFeedState extends State<EvidenceReelFeed> with SingleTickerPr
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(14),
-              color: Colors.white.withOpacity(0.35), // Opacidad ajustada al 35%
+              color: const Color.fromRGBO(255, 255, 255, 0.35), // Opacidad ajustada al 35%
             ),
             padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 3),
             child: Column(
@@ -423,7 +350,7 @@ class _EvidenceReelFeedState extends State<EvidenceReelFeed> with SingleTickerPr
         padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
         width: 70, // Ancho reducido para un botón más pequeño
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.9),
+          color: const Color.fromRGBO(255, 255, 255, 0.9),
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
             color: isSelected ? AppColors.primary : Colors.grey.shade400,
@@ -431,7 +358,7 @@ class _EvidenceReelFeedState extends State<EvidenceReelFeed> with SingleTickerPr
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: const Color.fromRGBO(0, 0, 0, 0.1),
               blurRadius: 3,
               offset: const Offset(0, 1),
             ),
@@ -622,7 +549,7 @@ class _EvidenceReelFeedState extends State<EvidenceReelFeed> with SingleTickerPr
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
           decoration: BoxDecoration(
-            color: Colors.green.shade600.withOpacity(0.2), // Fondo con 20% de opacidad
+            color: const Color.fromRGBO(27, 94, 32, 0.2), // Equivalente a Colors.green.shade600 con 20% de opacidad
             border: Border.all(
               color: Colors.green.shade600,
               width: 1.5,
@@ -696,7 +623,7 @@ class _EvidenceReelFeedState extends State<EvidenceReelFeed> with SingleTickerPr
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.2), // Fondo con 20% de opacidad
+                color: color.withAlpha((0.2 * 255).toInt()), // Fondo con 20% de opacidad
                 border: Border.all(
                   color: color,
                   width: 1.5,
@@ -722,7 +649,7 @@ class _EvidenceReelFeedState extends State<EvidenceReelFeed> with SingleTickerPr
                         child: Text(
                           _getCategoryName(category),
                           style: TextStyle(
-                            color: color.withOpacity(0.9),
+                            color: color.withAlpha((0.9 * 255).toInt()),
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
                             height: 1.1,
@@ -735,7 +662,7 @@ class _EvidenceReelFeedState extends State<EvidenceReelFeed> with SingleTickerPr
                       Text(
                         '$count',
                         style: TextStyle(
-                          color: color.withOpacity(0.9),
+                          color: color.withAlpha((0.9 * 255).toInt()),
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
                         ),
@@ -861,7 +788,7 @@ class _EvidenceReelFeedState extends State<EvidenceReelFeed> with SingleTickerPr
                     begin: Alignment.bottomCenter,
                     end: Alignment.topCenter,
                     colors: [
-                      Colors.black.withOpacity(0.7),
+                      const Color.fromRGBO(0, 0, 0, 0.7),
                       Colors.transparent,
                     ],
                   ),
@@ -918,7 +845,7 @@ class _EvidenceReelFeedState extends State<EvidenceReelFeed> with SingleTickerPr
                 child: Container(
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.6),
+                    color: const Color.fromRGBO(0, 0, 0, 0.6),
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: const Row(
@@ -974,7 +901,7 @@ class _EvidenceReelFeedState extends State<EvidenceReelFeed> with SingleTickerPr
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
+                    color: const Color.fromRGBO(0, 0, 0, 0.2),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),

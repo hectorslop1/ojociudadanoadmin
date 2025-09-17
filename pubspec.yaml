@@ -54,6 +54,7 @@ dependencies:
   flutter_svg: ^2.0.10+1
   cached_network_image: ^3.3.1
   shimmer: ^3.0.0
+  animations: ^2.0.11
   
   # Maps
   google_maps_flutter: ^2.6.0
@@ -96,6 +97,8 @@ flutter:
   assets:
     - assets/ojoCiudadanoLogo.png
     - assets/EnsenadaLogo.png
+    - assets/Ciudad.png
+    - assets/Logo.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

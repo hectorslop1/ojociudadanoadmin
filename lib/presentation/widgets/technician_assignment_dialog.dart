@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ojo_ciudadano_admin/core/theme/app_colors.dart';
-import 'package:ojo_ciudadano_admin/domain/entities/report.dart';
 import 'package:ojo_ciudadano_admin/domain/entities/technician.dart';
 import 'package:ojo_ciudadano_admin/presentation/bloc/reports/reports_bloc.dart';
 import 'package:ojo_ciudadano_admin/presentation/bloc/reports/reports_event.dart';
@@ -23,7 +22,7 @@ class _TechnicianAssignmentDialogState extends State<TechnicianAssignmentDialog>
   bool _isLoading = true;
   String? _errorMessage;
   List<Technician> _technicians = [];
-  ReportCategory? _filterSpecialty;
+  String? _filterSpecialty;
 
   @override
   void initState() {
@@ -46,13 +45,15 @@ class _TechnicianAssignmentDialogState extends State<TechnicianAssignmentDialog>
           phone: '555-123-4567',
           profileImageUrl: 'https://via.placeholder.com/150',
           specialties: [
-            ReportCategory.lighting,
-            ReportCategory.roadRepair,
+            'Electricista',
+            'Bacheo',
           ],
           isActive: true,
           currentWorkload: 3,
           averageResolutionTime: 24.5,
-          satisfactionRating: 4.5,
+          rating: 4.5,
+          lastKnownLatitude: 31.871170,
+          lastKnownLongitude: -116.607612,
         ),
         Technician(
           id: '2',
@@ -61,13 +62,15 @@ class _TechnicianAssignmentDialogState extends State<TechnicianAssignmentDialog>
           phone: '555-765-4321',
           profileImageUrl: 'https://via.placeholder.com/150',
           specialties: [
-            ReportCategory.waterLeaks,
-            ReportCategory.garbageCollection,
+            'Plomería',
+            'Recolección',
           ],
           isActive: true,
           currentWorkload: 2,
           averageResolutionTime: 18.3,
-          satisfactionRating: 4.8,
+          rating: 4.8,
+          lastKnownLatitude: 31.872170,
+          lastKnownLongitude: -116.608612,
         ),
         Technician(
           id: '3',
@@ -76,13 +79,15 @@ class _TechnicianAssignmentDialogState extends State<TechnicianAssignmentDialog>
           phone: '555-987-6543',
           profileImageUrl: 'https://via.placeholder.com/150',
           specialties: [
-            ReportCategory.garbageCollection,
-            ReportCategory.disabilityRamps,
+            'Recolección',
+            'Accesibilidad',
           ],
           isActive: true,
           currentWorkload: 5,
           averageResolutionTime: 36.7,
-          satisfactionRating: 4.2,
+          rating: 4.2,
+          lastKnownLatitude: 31.873170,
+          lastKnownLongitude: -116.609612,
         ),
         Technician(
           id: '4',
@@ -91,13 +96,15 @@ class _TechnicianAssignmentDialogState extends State<TechnicianAssignmentDialog>
           phone: '555-456-7890',
           profileImageUrl: 'https://via.placeholder.com/150',
           specialties: [
-            ReportCategory.insecurity,
-            ReportCategory.trafficLightsDamaged,
+            'Seguridad',
+            'Semáforos',
           ],
           isActive: true,
           currentWorkload: 1,
           averageResolutionTime: 12.8,
-          satisfactionRating: 4.9,
+          rating: 4.9,
+          lastKnownLatitude: 31.874170,
+          lastKnownLongitude: -116.610612,
         ),
         Technician(
           id: '5',
@@ -106,13 +113,15 @@ class _TechnicianAssignmentDialogState extends State<TechnicianAssignmentDialog>
           phone: '555-234-5678',
           profileImageUrl: 'https://via.placeholder.com/150',
           specialties: [
-            ReportCategory.animalAbuse,
-            ReportCategory.other,
+            'Protección Animal',
+            'General',
           ],
-          isActive: false,
+          isActive: false, // De vacaciones
           currentWorkload: 0,
-          averageResolutionTime: 28.4,
-          satisfactionRating: 4.0,
+          averageResolutionTime: 20.1,
+          rating: 4.3,
+          lastKnownLatitude: 31.875170,
+          lastKnownLongitude: -116.611612,
         ),
       ];
     });
@@ -123,9 +132,7 @@ class _TechnicianAssignmentDialogState extends State<TechnicianAssignmentDialog>
       return _technicians.where((tech) => tech.isActive).toList();
     }
     return _technicians
-        .where((tech) => 
-            tech.isActive && 
-            tech.specialties.contains(_filterSpecialty))
+        .where((tech) => tech.isActive && (_filterSpecialty == null || tech.specialties.contains(_filterSpecialty)))
         .toList();
   }
 
@@ -140,29 +147,9 @@ class _TechnicianAssignmentDialogState extends State<TechnicianAssignmentDialog>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Filtro por especialidad
-            DropdownButtonFormField<ReportCategory?>(
-              decoration: const InputDecoration(
-                labelText: 'Filtrar por especialidad',
-                border: OutlineInputBorder(),
-              ),
-              value: _filterSpecialty,
-              items: [
-                const DropdownMenuItem(
-                  value: null,
-                  child: Text('Todas las especialidades'),
-                ),
-                ...ReportCategory.values.map((category) {
-                  return DropdownMenuItem(
-                    value: category,
-                    child: Text(_getCategoryName(category)),
-                  );
-                }),
-              ],
-              onChanged: (value) {
-                setState(() {
-                  _filterSpecialty = value;
-                });
-              },
+            ElevatedButton(
+              onPressed: _showFilterDialog,
+              child: const Text('Filtrar por especialidad'),
             ),
             const SizedBox(height: 16),
             
@@ -226,7 +213,7 @@ class _TechnicianAssignmentDialogState extends State<TechnicianAssignmentDialog>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Especialidades: ${technician.specialties.map((s) => _getCategoryName(s)).join(", ")}',
+                            'Especialidades: ${technician.specialties.join(", ")}',
                           ),
                           Row(
                             children: [
@@ -244,7 +231,7 @@ class _TechnicianAssignmentDialogState extends State<TechnicianAssignmentDialog>
                                 color: Colors.amber,
                               ),
                               const SizedBox(width: 4),
-                              Text('${technician.satisfactionRating.toStringAsFixed(1)}/5.0'),
+                              Text('Calificación: ${technician.rating.toStringAsFixed(1)}/5.0'),
                             ],
                           ),
                         ],
@@ -296,41 +283,6 @@ class _TechnicianAssignmentDialogState extends State<TechnicianAssignmentDialog>
     );
   }
 
-  String _getCategoryName(ReportCategory category) {
-    switch (category) {
-      case ReportCategory.lighting:
-        return 'Alumbrado';
-      case ReportCategory.roadRepair:
-        return 'Reparación de Calles';
-      case ReportCategory.garbageCollection:
-        return 'Recolección de Basura';
-      case ReportCategory.waterLeaks:
-        return 'Fugas de Agua';
-      case ReportCategory.abandonedVehicles:
-        return 'Vehículos Abandonados';
-      case ReportCategory.noise:
-        return 'Ruido';
-      case ReportCategory.animalAbuse:
-        return 'Maltrato Animal';
-      case ReportCategory.insecurity:
-        return 'Inseguridad';
-      case ReportCategory.stopSignsDamaged:
-        return 'Señales de Alto Dañadas';
-      case ReportCategory.trafficLightsDamaged:
-        return 'Semáforos Dañados';
-      case ReportCategory.poorSignage:
-        return 'Señalización Deficiente';
-      case ReportCategory.genderEquity:
-        return 'Equidad de Género';
-      case ReportCategory.disabilityRamps:
-        return 'Rampas para Discapacitados';
-      case ReportCategory.serviceComplaints:
-        return 'Quejas de Servicio';
-      case ReportCategory.other:
-        return 'Otros';
-    }
-  }
-
   Color _getWorkloadColor(int workload) {
     if (workload <= 2) {
       return AppColors.success;
@@ -339,5 +291,55 @@ class _TechnicianAssignmentDialogState extends State<TechnicianAssignmentDialog>
     } else {
       return AppColors.error;
     }
+  }
+  
+  void _showFilterDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Filtrar por especialidad'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              RadioListTile<String?>(
+                title: const Text('Todas'),
+                value: null,
+                groupValue: _filterSpecialty,
+                onChanged: (value) {
+                  setState(() {
+                    _filterSpecialty = value;
+                  });
+                  Navigator.pop(context);
+                },
+              ),
+              // Lista de especialidades comunes
+              ...[
+                'Bacheo',
+                'Electricista',
+                'Plomería',
+                'Recolección',
+                'Señalización',
+                'Tránsito',
+                'Seguridad',
+                'Protección Animal',
+              ].map((specialty) {
+                return RadioListTile<String>(
+                  title: Text(specialty),
+                  value: specialty,
+                  groupValue: _filterSpecialty,
+                  onChanged: (value) {
+                    setState(() {
+                      _filterSpecialty = value;
+                    });
+                    Navigator.pop(context);
+                  },
+                );
+              }),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

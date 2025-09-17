@@ -15,6 +15,8 @@ class ReportRepositoryImpl implements ReportRepository {
     ReportCategory? category,
     DateTime? startDate,
     DateTime? endDate,
+    String? delegationId,
+    int? minPriority,
   }) async {
     try {
       final reports = await remoteDataSource.getReports(
@@ -22,6 +24,8 @@ class ReportRepositoryImpl implements ReportRepository {
         category: category != null ? _categoryToString(category) : null,
         startDate: startDate,
         endDate: endDate,
+        delegationId: delegationId,
+        minPriority: minPriority,
       );
       return Right(reports);
     } catch (e) {
@@ -70,9 +74,9 @@ class ReportRepositoryImpl implements ReportRepository {
   }
 
   @override
-  Future<Either<Failure, Map<ReportCategory, int>>> getReportCountByCategory() async {
+  Future<Either<Failure, Map<ReportCategory, int>>> getReportCountByCategory({String? delegationId}) async {
     try {
-      final countByCategory = await remoteDataSource.getReportCountByCategory();
+      final countByCategory = await remoteDataSource.getReportCountByCategory(delegationId: delegationId);
       final result = <ReportCategory, int>{};
       
       countByCategory.forEach((key, value) {
@@ -87,9 +91,9 @@ class ReportRepositoryImpl implements ReportRepository {
   }
 
   @override
-  Future<Either<Failure, Map<ReportStatus, int>>> getReportCountByStatus() async {
+  Future<Either<Failure, Map<ReportStatus, int>>> getReportCountByStatus({String? delegationId}) async {
     try {
-      final countByStatus = await remoteDataSource.getReportCountByStatus();
+      final countByStatus = await remoteDataSource.getReportCountByStatus(delegationId: delegationId);
       final result = <ReportStatus, int>{};
       
       countByStatus.forEach((key, value) {
@@ -104,10 +108,30 @@ class ReportRepositoryImpl implements ReportRepository {
   }
 
   @override
-  Future<Either<Failure, double>> getAverageResolutionTime() async {
+  Future<Either<Failure, double>> getAverageResolutionTime({String? delegationId}) async {
     try {
-      final averageTime = await remoteDataSource.getAverageResolutionTime();
+      final averageTime = await remoteDataSource.getAverageResolutionTime(delegationId: delegationId);
       return Right(averageTime);
+    } catch (e) {
+      return Left(ServerFailure(message: e.toString()));
+    }
+  }
+  
+  @override
+  Future<Either<Failure, Report>> updateReportPriority(String reportId, int priority) async {
+    try {
+      final report = await remoteDataSource.updateReportPriority(reportId, priority);
+      return Right(report);
+    } catch (e) {
+      return Left(ServerFailure(message: e.toString()));
+    }
+  }
+  
+  @override
+  Future<Either<Failure, Map<String, double>>> getPerformanceMetrics({String? delegationId}) async {
+    try {
+      final metrics = await remoteDataSource.getPerformanceMetrics(delegationId: delegationId);
+      return Right(metrics);
     } catch (e) {
       return Left(ServerFailure(message: e.toString()));
     }
@@ -147,73 +171,40 @@ class ReportRepositoryImpl implements ReportRepository {
 
   String _categoryToString(ReportCategory category) {
     switch (category) {
-      case ReportCategory.lighting:
-        return 'lighting';
       case ReportCategory.roadRepair:
         return 'road_repair';
       case ReportCategory.garbageCollection:
         return 'garbage_collection';
-      case ReportCategory.waterLeaks:
-        return 'water_leaks';
-      case ReportCategory.abandonedVehicles:
-        return 'abandoned_vehicles';
-      case ReportCategory.noise:
-        return 'noise';
-      case ReportCategory.animalAbuse:
-        return 'animal_abuse';
-      case ReportCategory.insecurity:
-        return 'insecurity';
-      case ReportCategory.stopSignsDamaged:
-        return 'stop_signs_damaged';
-      case ReportCategory.trafficLightsDamaged:
-        return 'traffic_lights_damaged';
-      case ReportCategory.poorSignage:
-        return 'poor_signage';
-      case ReportCategory.genderEquity:
-        return 'gender_equity';
-      case ReportCategory.disabilityRamps:
-        return 'disability_ramps';
-      case ReportCategory.serviceComplaints:
-        return 'service_complaints';
-      case ReportCategory.other:
-        return 'other';
+      case ReportCategory.streetImprovement:
+        return 'street_improvement';
     }
   }
 
   ReportCategory _categoryFromString(String category) {
     switch (category) {
-      case 'lighting':
-        return ReportCategory.lighting;
       case 'road_repair':
         return ReportCategory.roadRepair;
       case 'garbage_collection':
         return ReportCategory.garbageCollection;
-      case 'water_leaks':
-        return ReportCategory.waterLeaks;
-      case 'abandoned_vehicles':
-        return ReportCategory.abandonedVehicles;
-      case 'noise':
-        return ReportCategory.noise;
-      case 'animal_abuse':
-        return ReportCategory.animalAbuse;
-      case 'insecurity':
-        return ReportCategory.insecurity;
-      case 'stop_signs_damaged':
-        return ReportCategory.stopSignsDamaged;
-      case 'traffic_lights_damaged':
-        return ReportCategory.trafficLightsDamaged;
+      case 'street_improvement':
+        return ReportCategory.streetImprovement;
+      // Handle legacy categories by mapping them to the new ones
+      case 'lighting':
       case 'poor_signage':
-        return ReportCategory.poorSignage;
+      case 'traffic_lights_damaged':
+      case 'stop_signs_damaged':
+        return ReportCategory.streetImprovement;
+      case 'water_leaks':
+      case 'abandoned_vehicles':
+      case 'noise':
+      case 'animal_abuse':
+      case 'insecurity':
       case 'gender_equity':
-        return ReportCategory.genderEquity;
       case 'disability_ramps':
-        return ReportCategory.disabilityRamps;
       case 'service_complaints':
-        return ReportCategory.serviceComplaints;
       case 'other':
-        return ReportCategory.other;
       default:
-        return ReportCategory.other;
+        return ReportCategory.garbageCollection;
     }
   }
 }

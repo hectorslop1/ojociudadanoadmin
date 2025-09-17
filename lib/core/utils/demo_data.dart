@@ -127,13 +127,15 @@ class DemoData {
         email: 'fernando.gomez@example.com',
         phone: '6461234567',
         specialties: [
-          ReportCategory.roadRepair,
-          ReportCategory.garbageCollection,
+          'Bacheo',
+          'Recolección',
         ],
         isActive: true,
         currentWorkload: 3,
         averageResolutionTime: 2.5,
-        satisfactionRating: 4.8,
+        rating: 4.8,
+        lastKnownLatitude: 31.871170,
+        lastKnownLongitude: -116.607612,
       ),
       'TEC-002': Technician(
         id: 'TEC-002',
@@ -141,13 +143,15 @@ class DemoData {
         email: 'luisa.hernandez@example.com',
         phone: '6469876543',
         specialties: [
-          ReportCategory.lighting,
-          ReportCategory.waterLeaks,
+          'Electricista',
+          'Plomería',
         ],
         isActive: true,
         currentWorkload: 2,
         averageResolutionTime: 1.8,
-        satisfactionRating: 4.9,
+        rating: 4.9,
+        lastKnownLatitude: 31.872170,
+        lastKnownLongitude: -116.608612,
       ),
       'TEC-003': Technician(
         id: 'TEC-003',
@@ -155,14 +159,16 @@ class DemoData {
         email: 'ricardo.mendoza@example.com',
         phone: '6465551234',
         specialties: [
-          ReportCategory.trafficLightsDamaged,
-          ReportCategory.stopSignsDamaged,
-          ReportCategory.poorSignage,
+          'Señalización',
+          'Tránsito',
+          'Infraestructura',
         ],
         isActive: true,
         currentWorkload: 4,
         averageResolutionTime: 3.2,
-        satisfactionRating: 4.6,
+        rating: 4.6,
+        lastKnownLatitude: 31.873170,
+        lastKnownLongitude: -116.609612,
       ),
       'TEC-004': Technician(
         id: 'TEC-004',
@@ -170,14 +176,16 @@ class DemoData {
         email: 'gabriela.vargas@example.com',
         phone: '6465554321',
         specialties: [
-          ReportCategory.abandonedVehicles,
-          ReportCategory.noise,
-          ReportCategory.insecurity,
+          'Tránsito',
+          'Inspección',
+          'Seguridad',
         ],
         isActive: true,
         currentWorkload: 2,
         averageResolutionTime: 2.1,
-        satisfactionRating: 4.7,
+        rating: 4.7,
+        lastKnownLatitude: 31.874170,
+        lastKnownLongitude: -116.610612,
       ),
     };
     return technicians[id]!;
@@ -209,6 +217,7 @@ class DemoData {
       createdAt: DateTime.now().subtract(const Duration(days: 5)),
       citizen: getDemoCitizen('CIT-001'),
       status: ReportStatus.pending,
+      priority: 4, // Alta prioridad
     ));
     
     // Reporte 2: Bache en la calle (segundo ejemplo)
@@ -226,6 +235,7 @@ class DemoData {
       status: ReportStatus.assigned,
       assignedTechnician: getDemoTechnician('TEC-001'),
       assignedAt: DateTime.now().subtract(const Duration(days: 1)),
+      priority: 3, // Prioridad media-alta
     ));
     
     // Reporte 3: Basura acumulada
@@ -243,6 +253,7 @@ class DemoData {
       status: ReportStatus.assigned,
       assignedTechnician: getDemoTechnician('TEC-001'),
       assignedAt: DateTime.now().subtract(const Duration(days: 2)),
+      priority: 2, // Prioridad media
     ));
     
     // Reporte 4: Basura acumulada (segundo ejemplo)
@@ -258,13 +269,14 @@ class DemoData {
       createdAt: DateTime.now().subtract(const Duration(days: 1)),
       citizen: getDemoCitizen('CIT-004'),
       status: ReportStatus.pending,
+      priority: 3, // Prioridad media-alta
     ));
     
     // Reporte 5: Fuga de agua
     reports.add(Report(
       id: 'REP-005',
       title: 'Fuga de agua en la calle',
-      category: ReportCategory.waterLeaks,
+      category: ReportCategory.streetImprovement,
       description: 'Fuga de agua importante que está desperdiciando mucha agua',
       latitude: randomOffset(centerLat, 0.007),
       longitude: randomOffset(centerLng, 0.007),
@@ -275,13 +287,14 @@ class DemoData {
       status: ReportStatus.inProgress,
       assignedTechnician: getDemoTechnician('TEC-002'),
       assignedAt: DateTime.now().subtract(const Duration(days: 3)),
+      priority: 5, // Prioridad alta
     ));
     
     // Reporte 6: Fuga de agua (segundo ejemplo)
     reports.add(Report(
       id: 'REP-006',
       title: 'Tubería rota en la acera',
-      category: ReportCategory.waterLeaks,
+      category: ReportCategory.streetImprovement,
       description: 'Tubería rota que está causando daños en la acera y la calle',
       latitude: randomOffset(centerLat, 0.006),
       longitude: randomOffset(centerLng, 0.006),
@@ -294,13 +307,14 @@ class DemoData {
       assignedAt: DateTime.now().subtract(const Duration(days: 6)),
       resolvedAt: DateTime.now().subtract(const Duration(days: 5)),
       resolutionNotes: 'Se reparó la tubería y se restauró la acera.',
+      priority: 4, // Prioridad alta
     ));
     
     // Reporte 7: Alumbrado público
     reports.add(Report(
       id: 'REP-007',
       title: 'Lámpara de alumbrado público no funciona',
-      category: ReportCategory.lighting,
+      category: ReportCategory.streetImprovement,
       description: 'Lámpara de alumbrado público apagada desde hace una semana',
       latitude: randomOffset(centerLat, 0.008),
       longitude: randomOffset(centerLng, 0.008),
@@ -313,13 +327,14 @@ class DemoData {
       assignedAt: DateTime.now().subtract(const Duration(days: 7)),
       resolvedAt: DateTime.now().subtract(const Duration(days: 6)),
       resolutionNotes: 'Se reemplazó la lámpara y se verificó el funcionamiento.',
+      priority: 2, // Prioridad media
     ));
     
     // Reporte 8: Alumbrado público (segundo ejemplo)
     reports.add(Report(
       id: 'REP-008',
       title: 'Poste de luz dañado',
-      category: ReportCategory.lighting,
+      category: ReportCategory.streetImprovement,
       description: 'Poste de luz inclinado que podría caerse',
       latitude: randomOffset(centerLat, 0.009),
       longitude: randomOffset(centerLng, 0.009),
@@ -330,13 +345,14 @@ class DemoData {
       status: ReportStatus.inProgress,
       assignedTechnician: getDemoTechnician('TEC-002'),
       assignedAt: DateTime.now().subtract(const Duration(days: 9)),
+      priority: 5, // Prioridad muy alta
     ));
     
     // Reporte 9: Vehículo abandonado
     reports.add(Report(
       id: 'REP-009',
       title: 'Vehículo abandonado en zona residencial',
-      category: ReportCategory.abandonedVehicles,
+      category: ReportCategory.roadRepair,
       description: 'Vehículo abandonado desde hace semanas, está causando problemas de estacionamiento',
       latitude: randomOffset(centerLat, 0.01),
       longitude: randomOffset(centerLng, 0.01),
@@ -349,13 +365,14 @@ class DemoData {
       assignedAt: DateTime.now().subtract(const Duration(days: 14)),
       resolvedAt: DateTime.now().subtract(const Duration(days: 2)),
       resolutionNotes: 'El vehículo cuenta con permisos especiales de estacionamiento en la zona.',
+      priority: 1, // Prioridad baja
     ));
     
     // Reporte 10: Vehículo abandonado (segundo ejemplo)
     reports.add(Report(
       id: 'REP-010',
       title: 'Vehículo abandonado con vidrios rotos',
-      category: ReportCategory.abandonedVehicles,
+      category: ReportCategory.roadRepair,
       description: 'Vehículo abandonado con vidrios rotos y sin placas',
       latitude: randomOffset(centerLat, 0.011),
       longitude: randomOffset(centerLng, 0.011),
@@ -366,13 +383,14 @@ class DemoData {
       status: ReportStatus.inProgress,
       assignedTechnician: getDemoTechnician('TEC-004'),
       assignedAt: DateTime.now().subtract(const Duration(days: 11)),
+      priority: 3, // Prioridad media-alta
     ));
     
     // Reporte 11: Ruido excesivo
     reports.add(Report(
       id: 'REP-011',
       title: 'Ruido excesivo de bar nocturno',
-      category: ReportCategory.noise,
+      category: ReportCategory.streetImprovement,
       description: 'Bar con música a alto volumen hasta altas horas de la madrugada',
       latitude: randomOffset(centerLat, 0.005),
       longitude: randomOffset(centerLng, 0.005),
@@ -381,13 +399,14 @@ class DemoData {
       createdAt: DateTime.now().subtract(const Duration(days: 6)),
       citizen: getDemoCitizen('CIT-001'),
       status: ReportStatus.pending,
+      priority: 2, // Prioridad media-baja
     ));
     
     // Reporte 12: Maltrato animal
     reports.add(Report(
       id: 'REP-012',
       title: 'Perro abandonado en condiciones precarias',
-      category: ReportCategory.animalAbuse,
+      category: ReportCategory.streetImprovement,
       description: 'Perro encadenado sin agua ni comida en un terreno baldío',
       latitude: randomOffset(centerLat, 0.013),
       longitude: randomOffset(centerLng, 0.013),
@@ -398,13 +417,14 @@ class DemoData {
       status: ReportStatus.assigned,
       assignedTechnician: getDemoTechnician('TEC-004'),
       assignedAt: DateTime.now().subtract(const Duration(days: 8)),
+      priority: 4, // Prioridad alta
     ));
     
     // Reporte 13: Inseguridad
     reports.add(Report(
       id: 'REP-013',
       title: 'Zona oscura propensa a asaltos',
-      category: ReportCategory.insecurity,
+      category: ReportCategory.streetImprovement,
       description: 'Callejón sin iluminación donde han ocurrido varios asaltos',
       latitude: randomOffset(centerLat, 0.007),
       longitude: randomOffset(centerLng, 0.007),
@@ -415,13 +435,14 @@ class DemoData {
       status: ReportStatus.inProgress,
       assignedTechnician: getDemoTechnician('TEC-004'),
       assignedAt: DateTime.now().subtract(const Duration(days: 10)),
+      priority: 5, // Prioridad muy alta
     ));
     
     // Reporte 14: Señal de alto dañada
     reports.add(Report(
       id: 'REP-014',
       title: 'Señal de alto derribada',
-      category: ReportCategory.stopSignsDamaged,
+      category: ReportCategory.streetImprovement,
       description: 'Señal de alto derribada en intersección peligrosa',
       latitude: randomOffset(centerLat, 0.006),
       longitude: randomOffset(centerLng, 0.006),
@@ -432,13 +453,14 @@ class DemoData {
       status: ReportStatus.assigned,
       assignedTechnician: getDemoTechnician('TEC-003'),
       assignedAt: DateTime.now().subtract(const Duration(days: 2)),
+      priority: 4, // Prioridad alta
     ));
     
     // Reporte 15: Semáforo dañado
     reports.add(Report(
       id: 'REP-015',
       title: 'Semáforo intermitente',
-      category: ReportCategory.trafficLightsDamaged,
+      category: ReportCategory.streetImprovement,
       description: 'Semáforo con luz intermitente en todas las direcciones',
       latitude: randomOffset(centerLat, 0.008),
       longitude: randomOffset(centerLng, 0.008),
@@ -447,6 +469,7 @@ class DemoData {
       createdAt: DateTime.now().subtract(const Duration(days: 2)),
       citizen: getDemoCitizen('CIT-005'),
       status: ReportStatus.pending,
+      priority: 5, // Prioridad muy alta
     ));
     
     return reports;

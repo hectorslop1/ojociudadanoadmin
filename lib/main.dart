@@ -1,28 +1,39 @@
+import 'package:animations/animations.dart';
 import 'package:dartz/dartz.dart' hide State;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:ojo_ciudadano_admin/core/errors/failures.dart';
+import 'package:ojo_ciudadano_admin/core/navigation/app_router.dart';
 import 'package:ojo_ciudadano_admin/core/theme/app_theme.dart';
 import 'package:ojo_ciudadano_admin/domain/entities/administrator.dart';
 import 'package:ojo_ciudadano_admin/domain/entities/citizen.dart';
 import 'package:ojo_ciudadano_admin/domain/entities/report.dart';
+import 'package:ojo_ciudadano_admin/presentation/bloc/auth/auth_bloc.dart';
 import 'package:ojo_ciudadano_admin/presentation/bloc/auth/auth_event.dart';
-import 'package:ojo_ciudadano_admin/presentation/bloc/theme/theme_event.dart';
+import 'package:ojo_ciudadano_admin/presentation/bloc/auth/auth_state.dart';
+import 'package:ojo_ciudadano_admin/presentation/bloc/theme/theme_bloc.dart';
 import 'package:ojo_ciudadano_admin/presentation/bloc/theme/theme_state.dart';
-import 'package:ojo_ciudadano_admin/core/theme/app_colors.dart';
 import 'package:ojo_ciudadano_admin/domain/entities/technician.dart';
 import 'package:ojo_ciudadano_admin/domain/repositories/administrator_repository.dart';
+import 'package:ojo_ciudadano_admin/domain/repositories/delegation_repository.dart';
 import 'package:ojo_ciudadano_admin/domain/repositories/report_repository.dart';
 import 'package:ojo_ciudadano_admin/domain/repositories/technician_repository.dart';
 import 'package:ojo_ciudadano_admin/domain/repositories/theme_repository.dart';
 import 'package:ojo_ciudadano_admin/domain/usecases/login_usecase.dart';
 import 'package:ojo_ciudadano_admin/domain/usecases/get_reports_usecase.dart';
+import 'package:ojo_ciudadano_admin/domain/usecases/get_delegations_usecase.dart';
 import 'package:ojo_ciudadano_admin/domain/usecases/assign_report_to_technician_usecase.dart';
-import 'package:ojo_ciudadano_admin/presentation/bloc/auth/auth_bloc.dart';
+import 'package:ojo_ciudadano_admin/domain/usecases/update_report_priority_usecase.dart';
+import 'package:ojo_ciudadano_admin/domain/usecases/suggest_technicians_usecase.dart';
+import 'package:ojo_ciudadano_admin/domain/services/report_priority_service.dart';
+import 'package:ojo_ciudadano_admin/domain/services/technician_assignment_service.dart';
+import 'package:ojo_ciudadano_admin/data/repositories/mock_delegation_repository.dart';
+import 'package:ojo_ciudadano_admin/presentation/bloc/delegations/delegations_bloc.dart';
+import 'package:ojo_ciudadano_admin/presentation/bloc/delegations/delegations_event.dart';
 import 'package:ojo_ciudadano_admin/presentation/bloc/reports/reports_bloc.dart';
 import 'package:ojo_ciudadano_admin/presentation/bloc/technicians/technicians_bloc.dart';
-import 'package:ojo_ciudadano_admin/presentation/bloc/theme/theme_bloc.dart';
 import 'package:ojo_ciudadano_admin/presentation/pages/dashboard_page.dart';
 import 'package:ojo_ciudadano_admin/presentation/pages/login_page.dart';
 import 'package:ojo_ciudadano_admin/presentation/pages/splash_page.dart';
@@ -158,7 +169,7 @@ class MockReportRepository implements ReportRepository {
     Report(
       id: '2',
       title: 'Luminaria dañada en parque',
-      category: ReportCategory.lighting,
+      category: ReportCategory.streetImprovement,
       description: 'Luminaria dañada en el parque',
       latitude: 19.435608,
       longitude: -99.143209,
@@ -181,19 +192,21 @@ class MockReportRepository implements ReportRepository {
         email: 'carlos@example.com',
         phone: '5551234567',
         specialties: [
-          ReportCategory.lighting,
-          ReportCategory.trafficLightsDamaged,
+          'Electricista',
+          'Semáforos',
         ],
         isActive: true,
         currentWorkload: 3,
         averageResolutionTime: 2.5,
-        satisfactionRating: 4.8,
+        rating: 4.8,
+        lastKnownLatitude: 19.432608,
+        lastKnownLongitude: -99.143209,
       ),
     ),
     Report(
       id: '3',
       title: 'Grafiti en muro escolar',
-      category: ReportCategory.other,
+      category: ReportCategory.garbageCollection,
       description: 'Grafiti en muro escolar',
       latitude: 19.422608,
       longitude: -99.153209,
@@ -211,21 +224,27 @@ class MockReportRepository implements ReportRepository {
       resolvedAt: null,
       resolutionNotes: null,
       assignedTechnician: Technician(
-        id: 't2',
-        name: 'Ana Martínez',
-        email: 'ana@example.com',
-        phone: '5559876543',
-        specialties: [ReportCategory.other, ReportCategory.garbageCollection],
+        id: 't3',
+        name: 'Roberto Sánchez',
+        email: 'roberto@example.com',
+        phone: '5552468135',
+        profileImageUrl: 'https://randomuser.me/api/portraits/men/67.jpg',
+        specialties: [
+          'Bacheo',
+          'Plomería',
+        ],
         isActive: true,
-        currentWorkload: 5,
-        averageResolutionTime: 3.2,
-        satisfactionRating: 4.9,
+        currentWorkload: 2,
+        averageResolutionTime: 4.0,
+        rating: 4.5,
+        lastKnownLatitude: 19.422608,
+        lastKnownLongitude: -99.123209,
       ),
     ),
     Report(
       id: '4',
       title: 'Semáforo intermitente en cruce',
-      category: ReportCategory.trafficLightsDamaged,
+      category: ReportCategory.roadRepair,
       description: 'Semáforo intermitente',
       latitude: 19.442608,
       longitude: -99.163209,
@@ -251,6 +270,8 @@ class MockReportRepository implements ReportRepository {
     ReportCategory? category,
     DateTime? startDate,
     DateTime? endDate,
+    String? delegationId,
+    int? minPriority,
   }) {
     try {
       List<Report> filteredReports = List.from(_reports);
@@ -276,6 +297,18 @@ class MockReportRepository implements ReportRepository {
       if (endDate != null) {
         filteredReports = filteredReports
             .where((r) => r.createdAt.isBefore(endDate))
+            .toList();
+      }
+      
+      if (delegationId != null) {
+        filteredReports = filteredReports
+            .where((r) => r.delegation?.id == delegationId)
+            .toList();
+      }
+      
+      if (minPriority != null) {
+        filteredReports = filteredReports
+            .where((r) => (r.priority ?? 0) >= minPriority)
             .toList();
       }
 
@@ -354,11 +387,16 @@ class MockReportRepository implements ReportRepository {
         name: 'Técnico Asignado',
         email: 'tecnico@example.com',
         phone: '5551234567',
-        specialties: [ReportCategory.lighting],
+        specialties: [
+          'Electricista',
+          'Semáforos',
+        ],
         isActive: true,
         currentWorkload: 2,
         averageResolutionTime: 3.0,
-        satisfactionRating: 4.5,
+        rating: 4.5,
+        lastKnownLatitude: 19.432608,
+        lastKnownLongitude: -99.133209,
       );
 
       final updatedReport = Report(
@@ -430,11 +468,16 @@ class MockReportRepository implements ReportRepository {
   }
 
   @override
-  Future<Either<Failure, Map<ReportCategory, int>>> getReportCountByCategory() {
+  Future<Either<Failure, Map<ReportCategory, int>>> getReportCountByCategory({String? delegationId}) {
     try {
       final Map<ReportCategory, int> countByCategory = {};
+      
+      // Filtrar por delegación si se especifica
+      final reportsToCount = delegationId != null
+          ? _reports.where((r) => r.delegation?.id == delegationId).toList()
+          : _reports;
 
-      for (final report in _reports) {
+      for (final report in reportsToCount) {
         countByCategory[report.category] =
             (countByCategory[report.category] ?? 0) + 1;
       }
@@ -446,11 +489,16 @@ class MockReportRepository implements ReportRepository {
   }
 
   @override
-  Future<Either<Failure, Map<ReportStatus, int>>> getReportCountByStatus() {
+  Future<Either<Failure, Map<ReportStatus, int>>> getReportCountByStatus({String? delegationId}) {
     try {
       final Map<ReportStatus, int> countByStatus = {};
+      
+      // Filtrar por delegación si se especifica
+      final reportsToCount = delegationId != null
+          ? _reports.where((r) => r.delegation?.id == delegationId).toList()
+          : _reports;
 
-      for (final report in _reports) {
+      for (final report in reportsToCount) {
         countByStatus[report.status] = (countByStatus[report.status] ?? 0) + 1;
       }
 
@@ -461,9 +509,14 @@ class MockReportRepository implements ReportRepository {
   }
 
   @override
-  Future<Either<Failure, double>> getAverageResolutionTime() {
+  Future<Either<Failure, double>> getAverageResolutionTime({String? delegationId}) {
     try {
-      final resolvedReports = _reports
+      // Filtrar por delegación si se especifica
+      var filteredReports = delegationId != null
+          ? _reports.where((r) => r.delegation?.id == delegationId).toList()
+          : _reports;
+          
+      final resolvedReports = filteredReports
           .where(
             (r) =>
                 r.status == ReportStatus.resolved &&
@@ -487,6 +540,86 @@ class MockReportRepository implements ReportRepository {
       return Future.value(Left(ServerFailure(message: e.toString())));
     }
   }
+  
+  @override
+  Future<Either<Failure, Report>> updateReportPriority(String reportId, int priority) {
+    try {
+      final reportIndex = _reports.indexWhere((r) => r.id == reportId);
+      if (reportIndex == -1) {
+        return Future.value(
+          const Left(NotFoundFailure(message: 'Reporte no encontrado')),
+        );
+      }
+      
+      // Validar que la prioridad esté entre 1 y 5
+      if (priority < 1 || priority > 5) {
+        return Future.value(
+          Left(ValidationFailure(message: 'La prioridad debe estar entre 1 y 5')),
+        );
+      }
+
+      final updatedReport = _reports[reportIndex].copyWith(priority: priority);
+      _reports[reportIndex] = updatedReport;
+      return Future.value(Right(updatedReport));
+    } catch (e) {
+      return Future.value(Left(ServerFailure(message: e.toString())));
+    }
+  }
+  
+  @override
+  Future<Either<Failure, Map<String, double>>> getPerformanceMetrics({String? delegationId}) {
+    try {
+      // Filtrar por delegación si se especifica
+      var filteredReports = delegationId != null
+          ? _reports.where((r) => r.delegation?.id == delegationId).toList()
+          : _reports;
+      
+      // Calcular métricas de rendimiento
+      final totalReports = filteredReports.length;
+      final resolvedReports = filteredReports.where((r) => r.status == ReportStatus.resolved).length;
+      final pendingReports = filteredReports.where((r) => r.status == ReportStatus.pending).length;
+      
+      // Calcular tiempo promedio de respuesta inicial (desde creación hasta asignación)
+      double avgResponseTime = 0;
+      final assignedReports = filteredReports.where((r) => r.assignedAt != null).toList();
+      if (assignedReports.isNotEmpty) {
+        double totalResponseHours = 0;
+        for (final report in assignedReports) {
+          final duration = report.assignedAt!.difference(report.createdAt);
+          totalResponseHours += duration.inHours;
+        }
+        avgResponseTime = totalResponseHours / assignedReports.length;
+      }
+      
+      // Calcular tasa de resolución
+      final resolutionRate = totalReports > 0 ? resolvedReports / totalReports : 0;
+      
+      // Calcular tiempo promedio de resolución
+      double avgResolutionTime = 0;
+      final completedReports = filteredReports.where(
+        (r) => r.status == ReportStatus.resolved && r.assignedAt != null && r.resolvedAt != null
+      ).toList();
+      
+      if (completedReports.isNotEmpty) {
+        double totalResolutionHours = 0;
+        for (final report in completedReports) {
+          final duration = report.resolvedAt!.difference(report.assignedAt!);
+          totalResolutionHours += duration.inHours;
+        }
+        avgResolutionTime = totalResolutionHours / completedReports.length;
+      }
+      
+      return Future.value(Right({
+        'averageResponseTime': avgResponseTime,
+        'averageResolutionTime': avgResolutionTime,
+        'resolutionRate': resolutionRate.toDouble(),
+        'pendingRate': totalReports > 0 ? (pendingReports / totalReports).toDouble() : 0.0,
+        'rating': 4.2, // Valor simulado
+      }));
+    } catch (e) {
+      return Future.value(Left(ServerFailure(message: e.toString())));
+    }
+  }
 }
 
 // Implementación temporal del repositorio de técnicos
@@ -497,42 +630,74 @@ class MockTechnicianRepository implements TechnicianRepository {
       name: 'Carlos Rodríguez',
       email: 'carlos@example.com',
       phone: '5551234567',
+      profileImageUrl: 'https://randomuser.me/api/portraits/men/32.jpg',
       specialties: [
-        ReportCategory.lighting,
-        ReportCategory.trafficLightsDamaged,
+        'Bacheo',
+        'Electricista',
       ],
       isActive: true,
       currentWorkload: 3,
-      averageResolutionTime: 2.5,
-      satisfactionRating: 4.8,
+      averageResolutionTime: 24.5,
+      rating: 4.8,
+      lastKnownLatitude: 19.432608,
+      lastKnownLongitude: -99.133209,
     ),
     Technician(
       id: 't2',
       name: 'Ana Martínez',
       email: 'ana@example.com',
       phone: '5559876543',
-      specialties: [ReportCategory.other, ReportCategory.garbageCollection],
+      profileImageUrl: 'https://randomuser.me/api/portraits/women/44.jpg',
+      specialties: [
+        'Plomería',
+        'Recolección',
+      ],
       isActive: true,
-      currentWorkload: 5,
-      averageResolutionTime: 3.2,
-      satisfactionRating: 4.9,
+      currentWorkload: 2,
+      averageResolutionTime: 18.2,
+      rating: 4.5,
+      lastKnownLatitude: 19.442608,
+      lastKnownLongitude: -99.143209,
     ),
     Technician(
       id: 't3',
-      name: 'Roberto Sánchez',
+      name: 'Roberto Gómez',
       email: 'roberto@example.com',
-      phone: '5552468135',
-      specialties: [ReportCategory.roadRepair, ReportCategory.waterLeaks],
+      phone: '5552345678',
+      profileImageUrl: 'https://randomuser.me/api/portraits/men/67.jpg',
+      specialties: [
+        'Señalización',
+        'Tránsito',
+        'Infraestructura',
+      ],
       isActive: true,
-      currentWorkload: 2,
-      averageResolutionTime: 4.0,
-      satisfactionRating: 4.5,
+      currentWorkload: 1,
+      averageResolutionTime: 12.8,
+      rating: 4.2,
+      lastKnownLatitude: 19.422608,
+      lastKnownLongitude: -99.123209,
+    ),
+    Technician(
+      id: 't4',
+      name: 'Laura Sánchez',
+      email: 'laura@example.com',
+      phone: '5553456789',
+      profileImageUrl: 'https://randomuser.me/api/portraits/women/22.jpg',
+      specialties: [
+        'Trabajo Social',
+        'Atención Ciudadana',
+      ],
+      isActive: false, // De vacaciones
+      currentWorkload: 0,
+      averageResolutionTime: 36.5,
+      rating: 4.9,
+      isAvailable: false,
     ),
   ];
 
   @override
   Future<Either<Failure, List<Technician>>> getTechnicians({
-    ReportCategory? specialty,
+    String? specialty,
     bool? isActive,
   }) {
     try {
@@ -651,7 +816,7 @@ class MockTechnicianRepository implements TechnicianRepository {
           address: 'Calle Principal y Av. Central',
           latitude: 19.4326,
           longitude: -99.1332,
-          category: ReportCategory.waterLeaks,
+          category: ReportCategory.garbageCollection,
           status: ReportStatus.inProgress,
           citizen: mockCitizen,
           evidenceUrls: ['https://example.com/image1.jpg'],
@@ -666,7 +831,7 @@ class MockTechnicianRepository implements TechnicianRepository {
           address: 'Av. Reforma 123',
           latitude: 19.4280,
           longitude: -99.1680,
-          category: ReportCategory.lighting,
+          category: ReportCategory.streetImprovement,
           status: ReportStatus.assigned,
           citizen: mockCitizen,
           evidenceUrls: ['https://example.com/image2.jpg'],
@@ -709,7 +874,7 @@ class MockTechnicianRepository implements TechnicianRepository {
       return Future.value(
         Right({
           'averageResolutionTime': tech.averageResolutionTime,
-          'satisfactionRating': tech.satisfactionRating,
+          'rating': tech.rating,
           'completionRate': 0.85,
           'responseTime': 1.2,
         }),
@@ -749,6 +914,13 @@ void setupDependencies() {
     () => MockTechnicianRepository(),
   );
   getIt.registerLazySingleton<ThemeRepository>(() => MockThemeRepository());
+  getIt.registerLazySingleton<DelegationRepository>(
+    () => MockDelegationRepository(),
+  );
+  
+  // Servicios
+  getIt.registerLazySingleton(() => ReportPriorityService());
+  getIt.registerLazySingleton(() => TechnicianAssignmentService());
 
   // Casos de uso
   getIt.registerLazySingleton(
@@ -760,6 +932,22 @@ void setupDependencies() {
   getIt.registerLazySingleton(
     () => AssignReportToTechnicianUseCase(getIt<ReportRepository>()),
   );
+  getIt.registerLazySingleton(
+    () => GetDelegationsUseCase(getIt<DelegationRepository>()),
+  );
+  getIt.registerLazySingleton(
+    () => UpdateReportPriorityUseCase(
+      getIt<ReportRepository>(),
+      getIt<ReportPriorityService>(),
+    ),
+  );
+  getIt.registerLazySingleton(
+    () => SuggestTechniciansUseCase(
+      reportRepository: getIt<ReportRepository>(),
+      technicianRepository: getIt<TechnicianRepository>(),
+      assignmentService: getIt<TechnicianAssignmentService>(),
+    ),
+  );
 
   // Blocs
   getIt.registerFactory(() => AuthBloc(loginUseCase: getIt<LoginUseCase>()));
@@ -767,11 +955,16 @@ void setupDependencies() {
     () => ReportsBloc(
       getReportsUseCase: getIt<GetReportsUseCase>(),
       assignReportToTechnicianUseCase: getIt<AssignReportToTechnicianUseCase>(),
+      updateReportPriorityUseCase: getIt<UpdateReportPriorityUseCase>(),
+      priorityService: getIt<ReportPriorityService>(),
     ),
   );
   getIt.registerFactory(() => TechniciansBloc(getIt<TechnicianRepository>()));
   getIt.registerFactory(
     () => ThemeBloc(themeRepository: getIt<ThemeRepository>()),
+  );
+  getIt.registerFactory(
+    () => DelegationsBloc(getDelegationsUseCase: getIt<GetDelegationsUseCase>()),
   );
 }
 
@@ -785,70 +978,97 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Configurar la orientación preferida de la aplicación
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+    
+    // Configurar el estilo de la barra de estado
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark,
+        statusBarBrightness: Brightness.light,
+      ),
+    );
+    
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
-          create: (_) =>
-              GetIt.instance<AuthBloc>()..add(CheckAuthStatusEvent()),
+        BlocProvider<AuthBloc>(
+          create: (_) => GetIt.instance<AuthBloc>()..add(CheckAuthStatusEvent()),
         ),
-        BlocProvider(
-          create: (_) => GetIt.instance<ThemeBloc>()..add(GetThemeEvent()),
+        BlocProvider<ThemeBloc>(
+          create: (_) => GetIt.instance<ThemeBloc>(),
         ),
-        BlocProvider(create: (_) => GetIt.instance<ReportsBloc>()),
-        BlocProvider(create: (_) => GetIt.instance<TechniciansBloc>()),
+        BlocProvider<ReportsBloc>(
+          create: (_) => GetIt.instance<ReportsBloc>(),
+        ),
+        BlocProvider<TechniciansBloc>(
+          create: (_) => GetIt.instance<TechniciansBloc>(),
+        ),
+        BlocProvider<DelegationsBloc>(
+          create: (_) => GetIt.instance<DelegationsBloc>()..add(const LoadDelegationsEvent(isActive: true)),
+        ),
       ],
       child: BlocBuilder<ThemeBloc, ThemeState>(
-        builder: (context, state) {
-          bool isDarkTheme = false;
-          if (state is ThemeLoaded) {
-            isDarkTheme = state.isDarkTheme;
-          }
-
-          final theme = isDarkTheme ? AppTheme.darkTheme : AppTheme.lightTheme;
-
+        builder: (context, themeState) {
+          final isDarkMode = themeState is ThemeLoaded ? themeState.isDarkTheme : false;
+          
           return MaterialApp(
             title: 'Ojo Ciudadano Admin',
             debugShowCheckedModeBanner: false,
-            theme: theme.copyWith(
-              // Asegurar que el colorScheme se aplique correctamente
-              colorScheme: isDarkTheme
-                  ? ColorScheme.dark(
-                      primary: AppColors.primaryDark,
-                      secondary: AppColors.actionButton,
-                      surface: const Color(0xFF1E1E1E),
-                      surfaceContainerHighest: const Color(0xFF121212),
-                      error: AppColors.error,
-                      onPrimary: Colors.black,
-                      onSecondary: Colors.black,
-                      onSurface: Colors.white,
-                      onSurfaceVariant: Colors.white,
-                      onError: Colors.white,
-                    )
-                  : ColorScheme.light(
-                      primary: AppColors.primary,
-                      secondary: AppColors.actionButton,
-                      surface: Colors.white,
-                      surfaceContainerHighest: Colors.grey[50]!,
-                      error: AppColors.error,
-                      onPrimary: Colors.white,
-                      onSecondary: Colors.black,
-                      onSurface: Colors.black87,
-                      onSurfaceVariant: Colors.black87,
-                      onError: Colors.white,
-                    ),
-            ),
-            home: const SplashPage(),
-            routes: {
-              '/login': (context) => const LoginPage(),
-              '/dashboard': (context) => const DashboardPage(),
-            },
-            // Asegurar que el tema se aplique a los dialogs
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
+            onGenerateRoute: AppRouter.generateRoute,
+            initialRoute: AppRouter.splash,
+            // Configurar transiciones de página predeterminadas
             builder: (context, child) {
-              return Theme(data: theme, child: child!);
+              return _AnimationWrapper(child: child!);
             },
+            home: BlocBuilder<AuthBloc, AuthState>(
+              builder: (context, authState) {
+                if (authState is AuthInitial) {
+                  // Disparar evento para verificar si hay un usuario autenticado
+                  context.read<AuthBloc>().add(CheckAuthStatusEvent());
+                  return const SplashPage();
+                } else if (authState is AuthAuthenticated) {
+                  // Usuario autenticado, mostrar dashboard
+                  return const DashboardPage();
+                } else if (authState is AuthUnauthenticated) {
+                  // Usuario no autenticado, mostrar login
+                  return const LoginPage();
+                } else {
+                  // Estado de carga o error, mostrar splash
+                  return const SplashPage();
+                }
+              },
+            ),
           );
         },
       ),
+    );
+  }
+}
+
+/// Widget para envolver la aplicación con animaciones globales
+class _AnimationWrapper extends StatelessWidget {
+  final Widget child;
+  
+  const _AnimationWrapper({required this.child});
+  
+  @override
+  Widget build(BuildContext context) {
+    return PageTransitionSwitcher(
+      transitionBuilder: (child, primaryAnimation, secondaryAnimation) {
+        return FadeThroughTransition(
+          animation: primaryAnimation,
+          secondaryAnimation: secondaryAnimation,
+          child: child,
+        );
+      },
+      child: child,
     );
   }
 }

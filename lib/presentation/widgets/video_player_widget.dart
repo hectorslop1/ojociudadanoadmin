@@ -162,36 +162,12 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
 
   String _getCategoryName(ReportCategory category) {
     switch (category) {
-      case ReportCategory.lighting:
-        return 'Alumbrado';
       case ReportCategory.roadRepair:
         return 'Bacheo';
       case ReportCategory.garbageCollection:
         return 'Recolección de basura';
-      case ReportCategory.waterLeaks:
-        return 'Fugas de agua';
-      case ReportCategory.abandonedVehicles:
-        return 'Vehículos abandonados';
-      case ReportCategory.noise:
-        return 'Exceso de ruido';
-      case ReportCategory.animalAbuse:
-        return 'Maltrato animal';
-      case ReportCategory.insecurity:
-        return 'Inseguridad';
-      case ReportCategory.stopSignsDamaged:
-        return 'Señales de alto dañadas';
-      case ReportCategory.trafficLightsDamaged:
-        return 'Semáforos dañados';
-      case ReportCategory.poorSignage:
-        return 'Señalización deficiente';
-      case ReportCategory.genderEquity:
-        return 'Equidad de género';
-      case ReportCategory.disabilityRamps:
-        return 'Rampas para discapacitados';
-      case ReportCategory.serviceComplaints:
-        return 'Quejas de servicio';
-      case ReportCategory.other:
-        return 'Otros';
+      case ReportCategory.streetImprovement:
+        return 'Mejoramiento de calles';
     }
   }
 

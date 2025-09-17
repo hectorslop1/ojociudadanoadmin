@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:ojo_ciudadano_admin/core/theme/app_colors.dart';
 import 'package:ojo_ciudadano_admin/domain/entities/report.dart';
 import 'package:ojo_ciudadano_admin/presentation/widgets/evidence_reel_item.dart';
-import 'package:ojo_ciudadano_admin/core/theme/app_colors.dart';
 
 class EvidenceReelFeed extends StatefulWidget {
   final List<Report> reports;
@@ -134,7 +134,7 @@ class _EvidenceReelFeedState extends State<EvidenceReelFeed> with SingleTickerPr
       case ReportCategory.garbageCollection:
         return 'Recolección de Basura';
       case ReportCategory.streetImprovement:
-        return 'Mejoramiento de Calles';
+        return 'Mejoramiento de la Imagen Urbana';
     }
   }
   
@@ -186,11 +186,11 @@ class _EvidenceReelFeedState extends State<EvidenceReelFeed> with SingleTickerPr
   Color _getCategoryColor(ReportCategory category) {
     switch (category) {
       case ReportCategory.roadRepair:
-        return Colors.brown.shade600;
+        return AppColors.warning; // Naranja para Bacheo
       case ReportCategory.garbageCollection:
-        return Colors.green.shade800;
+        return AppColors.success; // Verde para Recolección de basura
       case ReportCategory.streetImprovement:
-        return Colors.blue.shade700;
+        return AppColors.info; // Azul para Mejoramiento de la Imagen Urbana
     }
   }
 

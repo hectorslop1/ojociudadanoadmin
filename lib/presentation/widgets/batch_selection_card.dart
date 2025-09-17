@@ -251,19 +251,19 @@ class BatchSelectionCard extends StatelessWidget {
         return CategoryInfo(
           name: 'Bacheo',
           icon: Icons.construction,
-          color: Colors.orange,
+          color: AppColors.warning, // Naranja para Bacheo
         );
       case ReportCategory.garbageCollection:
         return CategoryInfo(
           name: 'Recolección de basura',
           icon: Icons.delete_outline,
-          color: Colors.green,
+          color: AppColors.success, // Verde para Recolección de basura
         );
       case ReportCategory.streetImprovement:
         return CategoryInfo(
-          name: 'Mejoramiento de calles',
+          name: 'Mejoramiento de la Imagen Urbana',
           icon: Icons.home_repair_service,
-          color: Colors.blue,
+          color: AppColors.info, // Azul para Mejoramiento de la Imagen Urbana
         );
     }
   }

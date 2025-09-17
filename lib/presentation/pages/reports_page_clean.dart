@@ -85,10 +85,7 @@ class _ReportsPageState extends State<ReportsPage>
   }
 
   void _loadReports() {
-    if (!mounted) return;
-    
     final ReportStatus? statusFilter = _statusFilters[_tabController.index];
-    
     context.read<ReportsBloc>().add(
       LoadReportsEvent(
         status: statusFilter,
@@ -129,25 +126,7 @@ class _ReportsPageState extends State<ReportsPage>
             child: BlocBuilder<ReportsBloc, ReportsState>(
               builder: (context, state) {
                 if (state is ReportsLoading) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF612232)),
-                          strokeWidth: 3.0,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          'Cargando reportes...',
-                          style: TextStyle(
-                            color: Theme.of(context).textTheme.bodyLarge?.color,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
+                  return const Center(child: CircularProgressIndicator());
                 } else if (state is ReportsLoaded) {
                   final reports = state.reports;
                   List<Report> filteredReports;
@@ -179,52 +158,8 @@ class _ReportsPageState extends State<ReportsPage>
                   }
 
                   if (filteredReports.isEmpty) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.search_off,
-                            size: 64,
-                            color: Colors.grey,
-                          ),
-                          const SizedBox(height: 16),
-                          const Text(
-                            'No hay reportes disponibles',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.grey,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'No se encontraron reportes con los filtros actuales',
-                            style: TextStyle(
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          ElevatedButton.icon(
-                            onPressed: () {
-                              setState(() {
-                                _selectedCategory = null;
-                                _startDate = null;
-                                _endDate = null;
-                                _minPriority = null;
-                                _tabController.index = 0; // Mostrar todos los reportes
-                              });
-                              _loadReports();
-                            },
-                            icon: const Icon(Icons.refresh),
-                            label: const Text('Limpiar filtros'),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF612232),
-                              foregroundColor: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
+                    return const Center(
+                      child: Text('No hay reportes disponibles'),
                     );
                   }
 
@@ -274,8 +209,6 @@ class _ReportsPageState extends State<ReportsPage>
                         .toList(),
                   );
                 } else if (state is ReportsError) {
-                  // Mostrar información de error detallada
-                  print('Error en ReportsPage: ${state.message}');
                   return Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -287,37 +220,15 @@ class _ReportsPageState extends State<ReportsPage>
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          'Error al cargar reportes:',
+                          'Error: ${state.message}',
                           style: const TextStyle(
                             color: Color(0xFFE53935),
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 24),
-                          child: Text(
-                            state.message,
-                            style: const TextStyle(
-                              color: Color(0xFFE53935),
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
+                          ), // Error color
                         ),
                         const SizedBox(height: 16),
-                        ElevatedButton.icon(
-                          onPressed: () {
-                            // Recargar los reportes con un mensaje de depuración
-                            print('Intentando recargar reportes...');
-                            _loadReports();
-                          },
-                          icon: const Icon(Icons.refresh),
-                          label: const Text('Reintentar'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF612232),
-                            foregroundColor: Colors.white,
-                          ),
+                        ElevatedButton(
+                          onPressed: _loadReports,
+                          child: const Text('Reintentar'),
                         ),
                       ],
                     ),

@@ -99,6 +99,9 @@ flutter:
     - assets/EnsenadaLogo.png
     - assets/Ciudad.png
     - assets/Logo.png
+    - assets/bache.jpg
+    - assets/camionbasura.jpg
+    - assets/calles.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

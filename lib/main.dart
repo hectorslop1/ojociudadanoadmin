@@ -33,6 +33,7 @@ import 'package:ojo_ciudadano_admin/data/repositories/mock_delegation_repository
 import 'package:ojo_ciudadano_admin/presentation/bloc/delegations/delegations_bloc.dart';
 import 'package:ojo_ciudadano_admin/presentation/bloc/delegations/delegations_event.dart';
 import 'package:ojo_ciudadano_admin/presentation/bloc/reports/reports_bloc.dart';
+import 'package:ojo_ciudadano_admin/presentation/bloc/reports/reports_event.dart';
 import 'package:ojo_ciudadano_admin/presentation/bloc/technicians/technicians_bloc.dart';
 import 'package:ojo_ciudadano_admin/presentation/pages/dashboard_page.dart';
 import 'package:ojo_ciudadano_admin/presentation/pages/login_page.dart';
@@ -1002,7 +1003,7 @@ class MyApp extends StatelessWidget {
           create: (_) => GetIt.instance<ThemeBloc>(),
         ),
         BlocProvider<ReportsBloc>(
-          create: (_) => GetIt.instance<ReportsBloc>(),
+          create: (_) => GetIt.instance<ReportsBloc>()..add(LoadReportsEvent()),
         ),
         BlocProvider<TechniciansBloc>(
           create: (_) => GetIt.instance<TechniciansBloc>(),

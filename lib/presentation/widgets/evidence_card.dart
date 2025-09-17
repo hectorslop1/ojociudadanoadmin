@@ -36,7 +36,7 @@ class EvidenceCard extends StatelessWidget {
         categoryName = 'Recolección de Basura';
         break;
       case ReportCategory.streetImprovement:
-        categoryName = 'Mejoramiento de Calles';
+        categoryName = 'Mejoramiento de la Imagen Urbana';
         break;
     }
     

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:ojo_ciudadano_admin/core/theme/app_colors.dart';
+import 'package:ojo_ciudadano_admin/core/theme/app_colors.dart';
 import 'package:ojo_ciudadano_admin/core/animations/animated_list_view.dart';
 import 'package:ojo_ciudadano_admin/core/animations/animated_card.dart';
 import 'package:ojo_ciudadano_admin/domain/entities/report.dart';
@@ -93,7 +93,7 @@ class _ReportsPageState extends State<ReportsPage>
       case ReportCategory.garbageCollection:
         return 'Recolección de basura';
       case ReportCategory.streetImprovement:
-        return 'Mejoramiento de calles';
+        return 'Mejoramiento de la Imagen Urbana';
     }
   }
 
@@ -111,11 +111,11 @@ class _ReportsPageState extends State<ReportsPage>
   Color _getCategoryColor(ReportCategory category) {
     switch (category) {
       case ReportCategory.roadRepair:
-        return const Color(0xFF795548); // Marrón
+        return AppColors.warning; // Naranja para Bacheo
       case ReportCategory.garbageCollection:
-        return const Color(0xFF4CAF50); // Verde
+        return AppColors.success; // Verde para Recolección de basura
       case ReportCategory.streetImprovement:
-        return const Color(0xFF3F51B5); // Índigo
+        return AppColors.info; // Azul para Mejoramiento de la Imagen Urbana
     }
   }
 

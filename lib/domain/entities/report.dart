@@ -13,7 +13,7 @@ enum ReportStatus {
 
 enum ReportCategory {
   garbageCollection, // Recolección de basura
-  streetImprovement, // Mejoramiento de calles
+  streetImprovement, // Mejoramiento de la Imagen Urbana
   roadRepair        // Bacheo
 }
 

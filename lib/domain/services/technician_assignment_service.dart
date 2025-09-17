@@ -169,7 +169,7 @@ class TechnicianAssignmentService {
       case ReportCategory.garbageCollection:
         return 'Recolección';
       case ReportCategory.streetImprovement:
-        return 'Mejoramiento de Calles';
+        return 'Mejoramiento de la Imagen Urbana';
     }
   }
 

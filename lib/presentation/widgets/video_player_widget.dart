@@ -167,7 +167,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
       case ReportCategory.garbageCollection:
         return 'Recolección de basura';
       case ReportCategory.streetImprovement:
-        return 'Mejoramiento de calles';
+        return 'Mejoramiento de la Imagen Urbana';
     }
   }
 

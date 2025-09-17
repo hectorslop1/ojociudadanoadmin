@@ -54,7 +54,19 @@ class StatusUtils {
 
   /// Obtiene el color de fondo estandarizado para un estado de reporte
   static Color getStatusBackgroundColor(ReportStatus status) {
-    return getStatusColor(status).withOpacity(0.15);
+    // Usar colores sólidos para mejor visibilidad
+    switch (status) {
+      case ReportStatus.pending:
+        return const Color(0xFFFFE082); // Amarillo sólido
+      case ReportStatus.assigned:
+        return const Color(0xFFFFB74D); // Ámbar sólido
+      case ReportStatus.inProgress:
+        return const Color(0xFF90CAF9); // Azul sólido
+      case ReportStatus.resolved:
+        return const Color(0xFFA5D6A7); // Verde sólido
+      case ReportStatus.rejected:
+        return const Color(0xFFEF9A9A); // Rojo sólido
+    }
   }
 
   /// Obtiene el color de texto estandarizado para un estado de reporte

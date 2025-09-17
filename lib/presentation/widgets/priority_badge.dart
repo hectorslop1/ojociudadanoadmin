@@ -1,5 +1,14 @@
 import 'package:flutter/material.dart';
 
+// Clase auxiliar para devolver los datos de prioridad
+class PriorityData {
+  final Color color;
+  final String label;
+  final IconData icon;
+  
+  PriorityData(this.color, this.label, this.icon);
+}
+
 class PriorityBadge extends StatelessWidget {
   final int? priority;
   final double size;
@@ -22,19 +31,29 @@ class PriorityBadge extends StatelessWidget {
     }
 
     // Obtener el color y el texto según la prioridad
-    final (color, label, icon) = _getPriorityInfo();
+    final priorityInfo = _getPriorityInfo();
+    final color = priorityInfo.color;
+    final label = priorityInfo.label;
+    final icon = priorityInfo.icon;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withAlpha(26),
+        color: color.withAlpha(80),  // Aún más opaco para mejor visibilidad
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withAlpha(77), width: 1),
+        border: Border.all(color: color, width: 2.0),  // Borde más grueso
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (showIcon) ...[
+          if (showIcon) ...[  
             Icon(icon, color: color, size: size * 0.6),
             const SizedBox(width: 4),
           ],
@@ -43,8 +62,16 @@ class PriorityBadge extends StatelessWidget {
               label,
               style: TextStyle(
                 color: color,
-                fontWeight: FontWeight.bold,
-                fontSize: size * 0.5,
+                fontWeight: FontWeight.w800,
+                fontSize: size * 0.55,
+                letterSpacing: 0.3,
+                shadows: [
+                  Shadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 1,
+                    offset: const Offset(0, 1),
+                  ),
+                ],
               ),
             ),
         ],
@@ -54,16 +81,23 @@ class PriorityBadge extends StatelessWidget {
 
   Widget _buildNoPriorityBadge(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: Colors.grey.withAlpha(26),
+        color: Colors.grey.withAlpha(50),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.withAlpha(77), width: 1),
+        border: Border.all(color: Colors.grey, width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (showIcon) ...[
+          if (showIcon) ...[  
             Icon(
               Icons.remove_circle_outline,
               color: Colors.grey,
@@ -76,8 +110,16 @@ class PriorityBadge extends StatelessWidget {
               'Sin prioridad',
               style: TextStyle(
                 color: Colors.grey,
-                fontWeight: FontWeight.w500,
-                fontSize: size * 0.5,
+                fontWeight: FontWeight.w800,
+                fontSize: size * 0.55,
+                letterSpacing: 0.3,
+                shadows: [
+                  Shadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 1,
+                    offset: const Offset(0, 1),
+                  ),
+                ],
               ),
             ),
         ],
@@ -85,20 +127,20 @@ class PriorityBadge extends StatelessWidget {
     );
   }
 
-  (Color, String, IconData) _getPriorityInfo() {
+  PriorityData _getPriorityInfo() {
     switch (priority) {
       case 5:
-        return (Colors.red, 'Crítica', Icons.priority_high);
+        return PriorityData(Colors.red, 'Crítica', Icons.priority_high);
       case 4:
-        return (Colors.deepOrange, 'Alta', Icons.arrow_upward);
+        return PriorityData(Colors.deepOrange, 'Alta', Icons.arrow_upward);
       case 3:
-        return (Colors.amber, 'Media', Icons.remove);
+        return PriorityData(Colors.amber, 'Media', Icons.remove);
       case 2:
-        return (Colors.blue, 'Baja', Icons.arrow_downward);
+        return PriorityData(Colors.blue, 'Baja', Icons.arrow_downward);
       case 1:
-        return (Colors.green, 'Muy baja', Icons.keyboard_double_arrow_down);
+        return PriorityData(Colors.green, 'Muy baja', Icons.keyboard_double_arrow_down);
       default:
-        return (Colors.grey, 'Sin prioridad', Icons.remove_circle_outline);
+        return PriorityData(Colors.grey, 'Sin prioridad', Icons.remove_circle_outline);
     }
   }
 }

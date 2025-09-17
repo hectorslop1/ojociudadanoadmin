@@ -20,14 +20,20 @@ class CategoryUtils {
   static Color getColorForCategory(ReportCategory category, {BuildContext? context}) {
     switch (category) {
       case ReportCategory.garbageCollection:
-        return AppColors.success;
+        // Verde para Recolección de basura
+        return context != null && Theme.of(context).brightness == Brightness.dark
+            ? AppColors.successDark
+            : AppColors.success;
       case ReportCategory.streetImprovement:
-        if (context != null && Theme.of(context).brightness == Brightness.dark) {
-          return AppColors.primaryDark;
-        }
-        return AppColors.primary;
+        // Azul para Mejoramiento de la Imagen Urbana
+        return context != null && Theme.of(context).brightness == Brightness.dark
+            ? AppColors.infoDark
+            : AppColors.info;
       case ReportCategory.roadRepair:
-        return Colors.grey[700]!; // Color gris más oscuro para mejor visibilidad
+        // Naranja para Bacheo
+        return context != null && Theme.of(context).brightness == Brightness.dark
+            ? AppColors.warningDark
+            : AppColors.warning;
     }
   }
 
@@ -37,7 +43,7 @@ class CategoryUtils {
       case ReportCategory.garbageCollection:
         return 'Recolección de Basura';
       case ReportCategory.streetImprovement:
-        return 'Mejoramiento de Calles';
+        return 'Mejoramiento de la Imagen Urbana';
       case ReportCategory.roadRepair:
         return 'Bacheo';
     }

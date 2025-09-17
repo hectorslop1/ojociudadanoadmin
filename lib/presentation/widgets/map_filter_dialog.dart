@@ -265,7 +265,7 @@ class _MapFilterDialogState extends State<MapFilterDialog> {
       case ReportCategory.garbageCollection:
         return 'Recolección de Basura';
       case ReportCategory.streetImprovement:
-        return 'Mejoramiento de Calles';
+        return 'Mejoramiento de la Imagen Urbana';
     }
   }
   

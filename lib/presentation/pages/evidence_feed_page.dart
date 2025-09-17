@@ -180,7 +180,7 @@ class _EvidenceFeedPageState extends State<EvidenceFeedPage> {
               categoryName = 'Recolección de Basura';
               break;
             case ReportCategory.streetImprovement:
-              categoryName = 'Mejoramiento de Calles';
+              categoryName = 'Mejoramiento de la Imagen Urbana';
               break;
           }
           return DropdownMenuItem(

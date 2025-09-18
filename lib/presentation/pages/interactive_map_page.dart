@@ -14,7 +14,9 @@ import 'package:ojo_ciudadano_admin/presentation/bloc/reports/reports_state.dart
 import 'package:ojo_ciudadano_admin/presentation/pages/report_detail_page.dart';
 
 class InteractiveMapPage extends StatefulWidget {
-  const InteractiveMapPage({super.key});
+  final Report? initialReport;
+  
+  const InteractiveMapPage({super.key, this.initialReport});
 
   @override
   State<InteractiveMapPage> createState() => _InteractiveMapPageState();
@@ -33,17 +35,34 @@ class _InteractiveMapPageState extends State<InteractiveMapPage> {
   // Lista de marcadores para el mapa
   final List<Marker> _markers = [];
   
-  // Posición central inicial (Ensenada, Baja California)
-  final LatLng _initialPosition = LatLng(31.871170072167523, -116.6076128288358);
-  
   // Nivel de zoom inicial
   final double _initialZoom = 14.0;
 
+  // Posición central inicial (se actualizará si hay un reporte inicial)
+  late LatLng _initialPosition;
+  
   @override
   void initState() {
     super.initState();
+    
+    // Si hay un reporte inicial, usar su ubicación como posición inicial
+    if (widget.initialReport != null) {
+      _initialPosition = LatLng(
+        widget.initialReport!.latitude,
+        widget.initialReport!.longitude
+      );
+    } else {
+      // Usar la posición predeterminada (Ensenada, Baja California)
+      _initialPosition = LatLng(31.871170072167523, -116.6076128288358);
+    }
+    
     _checkLocationPermission();
     _loadReports();
+    
+    // Si hay un reporte inicial, seleccionar su categoría como filtro
+    if (widget.initialReport != null) {
+      _selectedCategory = widget.initialReport!.category;
+    }
   }
 
   // Verificar permisos de ubicación
@@ -111,9 +130,9 @@ class _InteractiveMapPageState extends State<InteractiveMapPage> {
         );
   }
 
-  // Ir a la ubicación actual del usuario
+  // Ir a la ubicación actual del usuario o del reporte inicial
   Future<void> _goToUserLocation() async {
-    // Ir a la ubicación de Ensenada, Baja California
+    // Ir a la ubicación inicial (reporte o Ensenada, Baja California)
     _mapController.move(
       _initialPosition,
       _initialZoom,
@@ -121,9 +140,14 @@ class _InteractiveMapPageState extends State<InteractiveMapPage> {
     
     // Opcional: Mostrar un mensaje informativo
     if (!mounted) return;
+    
+    String message = widget.initialReport != null
+        ? 'Centrando en la ubicación del reporte'
+        : 'Centrando en Ensenada, Baja California';
+        
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: const Text('Centrando en Ensenada, Baja California'),
+        content: Text(message),
         backgroundColor: Theme.of(context).brightness == Brightness.light
             ? AppColors.primary
             : AppColors.primaryDark,

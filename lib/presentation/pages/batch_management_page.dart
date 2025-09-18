@@ -610,21 +610,6 @@ class _BatchActionsBottomSheetState extends State<BatchActionsBottomSheet> {
             );
           }),
         ),
-        const SizedBox(height: 8),
-        const Text(
-          'También puedes usar la priorización automática:',
-          style: TextStyle(fontSize: 12, color: Colors.grey),
-        ),
-        const SizedBox(height: 8),
-        OutlinedButton.icon(
-          onPressed: () {
-            // Aquí se implementaría la priorización automática
-            // Por ahora, simplemente cerramos el diálogo
-            Navigator.pop(context);
-          },
-          icon: const Icon(Icons.auto_awesome),
-          label: const Text('Priorizar automáticamente'),
-        ),
       ],
     );
   }
@@ -688,21 +673,6 @@ class _BatchActionsBottomSheetState extends State<BatchActionsBottomSheet> {
             },
           );
         }),
-        const SizedBox(height: 8),
-        const Text(
-          'También puedes usar la asignación inteligente:',
-          style: TextStyle(fontSize: 12, color: Colors.grey),
-        ),
-        const SizedBox(height: 8),
-        OutlinedButton.icon(
-          onPressed: () {
-            // Aquí se implementaría la asignación inteligente
-            // Por ahora, simplemente cerramos el diálogo
-            Navigator.pop(context);
-          },
-          icon: const Icon(Icons.recommend),
-          label: const Text('Asignar inteligentemente'),
-        ),
       ],
     );
   }

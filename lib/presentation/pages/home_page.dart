@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ojo_ciudadano_admin/core/theme/app_colors.dart';
 import 'package:ojo_ciudadano_admin/presentation/bloc/auth/auth_bloc.dart';
 import 'package:ojo_ciudadano_admin/presentation/bloc/auth/auth_state.dart';
-import 'package:ojo_ciudadano_admin/presentation/pages/batch_management_page.dart';
 import 'package:ojo_ciudadano_admin/presentation/pages/dashboard_page.dart';
 // import 'package:ojo_ciudadano_admin/presentation/pages/evidence_feed_page.dart'; // Temporalmente comentado
 import 'package:ojo_ciudadano_admin/presentation/pages/login_page.dart';
@@ -24,7 +23,6 @@ class _HomePageState extends State<HomePage> {
     const DashboardPage(),
     // const EvidenceFeedPage(), // Temporalmente removido del menú
     const ReportsPage(),
-    const BatchManagementPage(),
     const ProfilePage(),
   ];
 
@@ -32,7 +30,6 @@ class _HomePageState extends State<HomePage> {
     'Dashboard',
     // 'Evidencias', // Temporalmente removido del menú
     'Reportes',
-    'Gestión por Lotes',
     'Perfil',
   ];
 
@@ -97,10 +94,6 @@ class _HomePageState extends State<HomePage> {
             BottomNavigationBarItem(
               icon: Icon(Icons.assignment),
               label: 'Reportes',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.batch_prediction),
-              label: 'Lotes',
             ),
             BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Perfil'),
           ],

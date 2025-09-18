@@ -340,18 +340,18 @@ class ReportCard extends StatelessWidget {
                     Row(
                       mainAxisSize: MainAxisSize.max,
                       children: [
-                        // Botón de cambiar estatus
+                        // Botón de acciones
                         Flexible(
                           flex: 1,
                           child: ElevatedButton.icon(
                             onPressed: onChangeStatus,
                             icon: const Icon(
-                              Icons.edit_outlined,
+                              Icons.more_horiz,
                               size: 18,
                               color: Colors.white,
                             ),
                             label: const Text(
-                              'Cambiar Estatus',
+                              'Acciones',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.w500,
@@ -381,22 +381,6 @@ class ReportCard extends StatelessWidget {
                               color: Color(0xFF612232),
                             ),
                             tooltip: 'Ver en mapa',
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        // Botón de asignar técnico
-                        Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.grey[200],
-                          ),
-                          child: IconButton(
-                            onPressed: onAssignTechnician,
-                            icon: const Icon(
-                              Icons.person_add_outlined,
-                              color: Color(0xFF612232),
-                            ),
-                            tooltip: 'Asignar técnico',
                           ),
                         ),
                       ],

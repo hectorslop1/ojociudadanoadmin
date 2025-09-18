@@ -6,9 +6,11 @@ import 'package:ojo_ciudadano_admin/domain/entities/report.dart';
 import 'package:ojo_ciudadano_admin/presentation/bloc/reports/reports_bloc.dart';
 import 'package:ojo_ciudadano_admin/presentation/bloc/reports/reports_event.dart';
 import 'package:ojo_ciudadano_admin/presentation/bloc/reports/reports_state.dart';
+import 'package:ojo_ciudadano_admin/presentation/pages/interactive_map_page.dart';
 import 'package:ojo_ciudadano_admin/presentation/pages/report_detail_page.dart';
 import 'package:ojo_ciudadano_admin/presentation/widgets/priority_filter.dart';
 import 'package:ojo_ciudadano_admin/presentation/widgets/report_card.dart';
+import 'package:ojo_ciudadano_admin/presentation/widgets/single_report_actions.dart';
 
 class ReportsPage extends StatefulWidget {
   final ReportStatus? initialStatus;
@@ -253,23 +255,19 @@ class _ReportsPageState extends State<ReportsPage>
                           },
                           onChangeStatus: () => _showChangeStatusDialog(report),
                           onMapTap: () {
-                            // Implementar navegación al mapa
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Función de mapa en desarrollo'),
-                                duration: Duration(seconds: 2),
+                            // Navegar a la página de mapa y centrar en la ubicación del reporte
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => InteractiveMapPage(initialReport: report),
                               ),
-                            );
+                            ).then((_) {
+                              // Recargar los reportes al regresar
+                              _loadReports();
+                            });
                           },
-                          onAssignTechnician: () {
-                            // Implementar asignación de técnico
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Función de asignación de técnico en desarrollo'),
-                                duration: Duration(seconds: 2),
-                              ),
-                            );
-                          },
+                          // El botón de asignar técnico ya no existe en la tarjeta de reporte
+                          // Esta función se mantiene por compatibilidad con ReportCard
+                          onAssignTechnician: () {},
                         ))
                         .toList(),
                   );
@@ -401,78 +399,18 @@ class _ReportsPageState extends State<ReportsPage>
   }
 
   void _showChangeStatusDialog(Report report) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text(
-          'Cambiar Estado',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        contentPadding: const EdgeInsets.symmetric(vertical: 16),
-        titlePadding: const EdgeInsets.fromLTRB(24, 24, 24, 8),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildStatusOption(report, ReportStatus.pending, StatusUtils.getStatusName(ReportStatus.pending)),
-            _buildStatusOption(report, ReportStatus.assigned, StatusUtils.getStatusName(ReportStatus.assigned)),
-            _buildStatusOption(report, ReportStatus.inProgress, StatusUtils.getStatusName(ReportStatus.inProgress)),
-            _buildStatusOption(report, ReportStatus.resolved, StatusUtils.getStatusName(ReportStatus.resolved)),
-            _buildStatusOption(report, ReportStatus.rejected, StatusUtils.getStatusName(ReportStatus.rejected)),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
-          ),
-        ],
-      ),
-    );
+    // Usar el adaptador para mostrar el diálogo de acciones existente
+    SingleReportActions.showActionsForReport(context, report);
+    
+    // Recargar los reportes después de un breve retraso para asegurar que las acciones se hayan completado
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (mounted) {
+        _loadReports();
+      }
+    });
   }
 
-  Widget _buildStatusOption(Report report, ReportStatus status, String label) {
-    final bool isSelected = report.status == status;
-    final Color textColor = isSelected
-        ? const Color(0xFF612232)
-        : Colors.black87;
-    final String statusName = StatusUtils.getStatusName(status);
-
-    return InkWell(
-      onTap: () {
-        Navigator.pop(context);
-        // Aquí iría la lógica para cambiar el estado del reporte
-        context.read<ReportsBloc>().add(UpdateReportStatusEvent(reportId: report.id, status: status));
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? const Color.fromRGBO(97, 34, 50, 0.1)
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              statusName,
-              style: TextStyle(
-                color: textColor,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-              ),
-            ),
-            if (isSelected)
-              const Icon(
-                Icons.check_circle,
-                color: Color(0xFF612232),
-                size: 20,
-              ),
-          ],
-        ),
-      ),
-    );
-  }
+  // El método _buildStatusOption ha sido eliminado ya que ahora se usa ReportActionsDialog
 
   void _showFilterDialog() {
     showDialog(
